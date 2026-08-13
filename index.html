@@ -196,6 +196,32 @@
   .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:#4a4752;margin:10px 0}
   .flow .n{background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px 11px}
   .flow .ar{color:var(--pu2);font-weight:700}
+  /* Comentarios de revisión (TICO MASTER COPILOT) — persistentes en el navegador + exportables */
+  #cmBtn{position:fixed;right:18px;bottom:18px;z-index:60;background:var(--pu);color:#fff;border:0;border-radius:999px;
+    padding:11px 18px;font-weight:600;font-size:13px;cursor:pointer;box-shadow:0 10px 26px rgba(90,61,84,.32)}
+  #cmBtn .b{background:#fff;color:var(--pu);border-radius:999px;padding:0 7px;margin-left:7px;font-size:12px;font-weight:700}
+  #cmSel{position:absolute;z-index:70;background:var(--pu);color:#fff;border:0;border-radius:8px;padding:6px 11px;
+    font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25);display:none}
+  #cmDrawer{position:fixed;top:0;right:-440px;width:410px;max-width:94vw;height:100vh;background:#fff;z-index:65;
+    box-shadow:-14px 0 44px rgba(0,0,0,.18);transition:right .2s;display:flex;flex-direction:column;border-left:1px solid var(--line)}
+  #cmDrawer.open{right:0}
+  .cm-h{padding:16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .cm-h b{font-family:var(--hand);font-size:23px;color:var(--pu)}
+  .cm-h .x{background:none;border:0;font-size:19px;cursor:pointer;color:var(--mut);line-height:1}
+  .cm-meta{padding:10px 16px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center}
+  .cm-meta input{font-size:12px;padding:6px 9px;border:1px solid var(--line);border-radius:8px;flex:1;font-family:var(--body)}
+  .cm-list{flex:1;overflow:auto;padding:12px 16px}
+  .cm-empty{color:var(--mut);font-size:13px;text-align:center;margin-top:34px;line-height:1.6}
+  .cm-item{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+  .cm-item .q{font-size:12px;color:var(--pu2);background:#f7f3fa;border-radius:6px;padding:5px 8px;margin-bottom:6px}
+  .cm-item .c{font-size:13.5px;color:var(--ink);white-space:pre-wrap}
+  .cm-item .f{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:11px;color:var(--mut);gap:8px}
+  .cm-item .f button{background:none;border:0;color:#b23b3b;cursor:pointer;font-size:11px}
+  .cm-tag{font-size:10px;background:#f0e9f4;color:var(--pu);border-radius:10px;padding:1px 7px}
+  .cm-new{padding:12px 16px;border-top:1px solid var(--line);background:#faf7fc}
+  .cm-new .q{font-size:12px;color:var(--pu2);background:#fff;border:1px solid var(--line);border-radius:6px;padding:5px 8px;margin-bottom:6px;max-height:64px;overflow:auto}
+  .cm-new textarea{width:100%;height:64px;font-size:13px;padding:8px;border:1px solid var(--line);border-radius:8px;resize:vertical;font-family:var(--body)}
+  .cm-foot{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -727,6 +753,28 @@
   </main>
 </div>
 
+<!-- Comentarios de revisión (TICO MASTER COPILOT) -->
+<button id="cmBtn">Comentarios <span class="b" id="cmCount">0</span></button>
+<button id="cmSel">+ Comentar</button>
+<div id="cmDrawer">
+  <div class="cm-h"><b>Comentarios · TICO MASTER</b><button class="x" id="cmClose" title="Cerrar">✕</button></div>
+  <div class="cm-meta"><label class="mini" style="min-width:auto">Revisor:</label>
+    <input id="cmAuthor" placeholder="TICO MASTER COPILOT"></div>
+  <div class="cm-new" id="cmNew" style="display:none">
+    <div class="q" id="cmNewQ"></div>
+    <textarea id="cmNewText" placeholder="Comenta esta selección: qué mejorar, qué corregir, correlación de campo correcta…"></textarea>
+    <div style="margin-top:8px;display:flex;gap:8px"><button class="act" id="cmSave">Guardar</button>
+      <button class="act ghost" id="cmCancel">Cancelar</button></div>
+  </div>
+  <div class="cm-list" id="cmList"></div>
+  <div class="cm-foot">
+    <button class="act ghost" id="cmExport">Descargar .json</button>
+    <button class="act ghost" id="cmExportMd">Descargar .md</button>
+    <button class="act ghost" id="cmImport">Importar</button>
+    <input type="file" id="cmFile" accept=".json" style="display:none">
+  </div>
+</div>
+
 <script>
 // ================== Navegación por pestañas ==================
 const nav=document.getElementById("nav");
@@ -907,6 +955,63 @@ document.getElementById("reset").addEventListener("click",()=>{
   document.querySelectorAll("#funnelViews .view,#forecastViews .view").forEach(v=>v.classList.toggle("sel",["barras","tarjetas"].includes(v.dataset.view)));
   build();status("Restablecido al mapa por defecto.");});
 function status(t){document.getElementById("status").textContent=t;}
+</script>
+
+<script>
+// ===== Comentarios de revisión (TICO MASTER COPILOT) · persistentes (localStorage) + exportables =====
+(function(){
+  const KEY="erpco_comments_v1", AKEY="erpco_reviewer";
+  const $=id=>document.getElementById(id);
+  let comments=[]; try{comments=JSON.parse(localStorage.getItem(KEY)||"[]");}catch(e){}
+  const drawer=$("cmDrawer"),sel=$("cmSel"),list=$("cmList"),count=$("cmCount"),author=$("cmAuthor"),
+    newBox=$("cmNew"),newQ=$("cmNewQ"),newText=$("cmNewText");
+  author.value=localStorage.getItem(AKEY)||"TICO MASTER COPILOT";
+  author.addEventListener("change",()=>localStorage.setItem(AKEY,author.value.trim()));
+  const save=()=>localStorage.setItem(KEY,JSON.stringify(comments));
+  const esc=s=>(s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const activeTab=()=>{const b=document.querySelector('nav button.active');return b?b.textContent.trim():"";};
+  function render(){
+    count.textContent=comments.length;
+    if(!comments.length){list.innerHTML='<div class="cm-empty">Sin comentarios todavía.<br>Selecciona texto en cualquier pestaña y pulsa «+ Comentar».</div>';return;}
+    list.innerHTML=comments.map(c=>`<div class="cm-item"><div class="q">${esc(c.quote)}</div>
+      <div class="c">${esc(c.text)}</div>
+      <div class="f"><span><span class="cm-tag">${esc(c.tab)}</span> · ${esc(c.author)} · ${esc(c.when)}</span>
+      <button data-del="${c.id}">borrar</button></div></div>`).join("");
+    list.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{comments=comments.filter(x=>x.id!==b.dataset.del);save();render();}));
+  }
+  let pendingQuote="",pendingTab="";
+  document.addEventListener("mouseup",e=>{
+    if(drawer.contains(e.target)||e.target===sel)return;
+    const s=window.getSelection(),t=s&&s.toString().trim();
+    if(t&&t.length>2){const r=s.getRangeAt(0).getBoundingClientRect();
+      sel.style.display="block";
+      sel.style.top=(window.scrollY+r.bottom+6)+"px";
+      sel.style.left=(window.scrollX+Math.max(8,r.left))+"px";
+      pendingQuote=t.replace(/\s+/g," ").slice(0,300);pendingTab=activeTab();
+    } else sel.style.display="none";
+  });
+  document.addEventListener("scroll",()=>{sel.style.display="none";},true);
+  sel.addEventListener("click",()=>{sel.style.display="none";newBox.style.display="block";newQ.textContent=pendingQuote;
+    newText.value="";newText.dataset.tab=pendingTab;drawer.classList.add("open");newText.focus();});
+  $("cmSave").addEventListener("click",()=>{const txt=newText.value.trim();if(!txt)return;
+    comments.unshift({id:String(Date.now())+"-"+Math.round(performance.now()),quote:newQ.textContent,text:txt,
+      tab:newText.dataset.tab||activeTab(),author:author.value.trim()||"TICO MASTER",when:new Date().toLocaleString("es-ES")});
+    save();render();newBox.style.display="none";});
+  $("cmCancel").addEventListener("click",()=>newBox.style.display="none");
+  $("cmBtn").addEventListener("click",()=>drawer.classList.toggle("open"));
+  $("cmClose").addEventListener("click",()=>drawer.classList.remove("open"));
+  function dl(name,content,type){const b=new Blob([content],{type});const a=document.createElement("a");
+    a.href=URL.createObjectURL(b);a.download=name;a.click();}
+  $("cmExport").addEventListener("click",()=>dl("comentarios-tico-master.json",JSON.stringify(comments,null,2),"application/json"));
+  $("cmExportMd").addEventListener("click",()=>dl("comentarios-tico-master.md",
+    "# Comentarios de revisión · TICO MASTER COPILOT\n\n"+comments.map(c=>`## ${c.tab} — ${c.author} · ${c.when}\n> ${c.quote}\n\n${c.text}\n`).join("\n---\n"),"text/markdown"));
+  $("cmImport").addEventListener("click",()=>$("cmFile").click());
+  $("cmFile").addEventListener("change",ev=>{const f=ev.target.files[0];if(!f)return;const rd=new FileReader();
+    rd.onload=()=>{try{const arr=JSON.parse(rd.result);if(Array.isArray(arr)){const ids=new Set(comments.map(c=>c.id));
+      arr.forEach(c=>{if(c&&c.id&&!ids.has(c.id))comments.unshift(c);});save();render();}}catch(e){alert("JSON inválido");}};
+    rd.readAsText(f);ev.target.value="";});
+  render();
+})();
 </script>
 </body>
 </html>
