@@ -34,7 +34,7 @@
   nav button.active .i{background:var(--teal)}
   nav button:hover{background:#211c2b;color:#fff}
   nav button.active{background:#241f30;color:#fff;border-left-color:var(--pu2);font-weight:600}
-  main{padding:0;max-width:1120px}
+  main{padding:0;max-width:none;width:100%;min-width:0}
   .pad{padding:30px 34px 70px}
   @media(max-width:900px){
     :root{--nav:0px}
@@ -98,6 +98,35 @@
   table.metrics tr:last-child td{border-bottom:0}
   table.metrics code{font-family:var(--mono);font-size:12px;background:#f3eef6;padding:1px 5px;border-radius:5px}
   .m-name{font-weight:650}
+  /* CRM: áreas (contenido / edición / resultado) + validación interactiva */
+  .zone{border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:14px 0;background:#fff}
+  .zone.edit{background:#faf7fc;border-color:#e6dcec}
+  .zone.result{background:#fffaf3;border-color:#f0e0c8}
+  .zone-lbl{display:inline-flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:12px}
+  .zone-lbl.content{background:#eef6f6;color:var(--teal)}
+  .zone-lbl.edit{background:#f0e4f6;color:var(--pu)}
+  .zone-lbl.result{background:#fff1e0;color:#b25a00}
+  .crm-grid{display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:18px;align-items:start;margin:14px 0}
+  .crm-grid .zone{margin:0}
+  .crm-side{position:sticky;top:74px;display:flex;flex-direction:column;gap:14px}
+  @media(max-width:1100px){.crm-grid{grid-template-columns:1fr}.crm-side{position:static}}
+  .sample{border:1px dashed #d9cfe2;border-radius:12px;padding:12px 14px;background:#faf8fc}
+  .sample-h{font-size:13px;color:var(--mut);margin-bottom:9px}
+  .sample-chips{display:flex;gap:8px;flex-wrap:wrap}
+  .schip{font-size:12.5px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer}
+  .schip b{color:var(--pu)}
+  .schip.sel,.fcard.sel{outline:2px solid var(--pu2);outline-offset:0}
+  .detail .d-h{font-weight:700;color:var(--pu);font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  .detail .d-row{font-size:13.5px;margin:5px 0}
+  .detail .d-row .ex{color:var(--teal);font-size:15px}
+  .detail .d-val{margin-top:12px;font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .detail .d-val button{border:1px solid transparent;border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:600;cursor:pointer}
+  .detail .d-val button.ok{background:#e6f4ea;color:#1f7a44} .detail .d-val button.rev{background:#fff1e0;color:#b25a00}
+  .detail .d-val button.on{border-color:currentColor;box-shadow:inset 0 0 0 1px currentColor}
+  .vdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#d8d2e0;vertical-align:middle}
+  .vdot.ok{background:#20b36b} .vdot.rev{background:#e08a00}
+  .mk-kpi.hl,.mk-dwell.hl{outline:2px solid #00c4a7;outline-offset:1px;border-radius:6px}
+  .mk-stage.hl .mk-bar{outline:2px solid #00c4a7;outline-offset:1px}
 
   /* ---------- Editor de campos ---------- */
   .fcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:11px}
@@ -481,63 +510,92 @@
       <p>Lee el CRM real del partner y calcula el embudo: conversión, MRR, ciclo de venta y fuga por etapa.
       Aquí decides qué campo de Odoo alimenta cada métrica.</p></div>
     <div class="pad">
-      <div class="guide"><b>Cómo carga el CRM.</b> Busca oportunidades del partner por dos vías —
-      <code>partner_assigned_id</code> (pipeline de canal) y <code>partner_id</code> (cliente), ambas con
-      <i>child_of</i> — incluyendo perdidas/archivadas, y filtrando <code>type = opportunity</code>. Con esas
-      oportunidades y las etapas (<code>crm.stage</code>) monta todo lo de abajo.</div>
+      <div class="zone">
+        <span class="zone-lbl content">Contenido · referencia</span>
+        <div class="guide" style="margin:0 0 12px"><b>Cómo carga el CRM.</b> Busca oportunidades del partner por dos vías —
+        <code>partner_assigned_id</code> (pipeline de canal) y <code>partner_id</code> (cliente), ambas con
+        <i>child_of</i> — incluyendo perdidas/archivadas, y filtrando <code>type = opportunity</code>. Con esas
+        oportunidades y las etapas (<code>crm.stage</code>) monta el embudo.</div>
+        <div class="sample">
+          <div class="sample-h">Datos de ejemplo · <b>Talleres Ejemplo SL</b> — oportunidad «Implantación Odoo». Haz clic en un dato (o en un campo de la izquierda) para ver qué alimenta y validarlo.</div>
+          <div class="sample-chips">
+            <span class="schip" data-field="lead.stage">Etapa: <b>Negociación</b></span>
+            <span class="schip" data-field="lead.revenue">Ingreso esperado: <b>4.800 €</b></span>
+            <span class="schip" data-field="lead.mrr">MRR: <b>320 €/mes</b></span>
+            <span class="schip" data-field="lead.probability">Probabilidad: <b>65 %</b></span>
+            <span class="schip" data-field="lead.tags">Etiqueta: <b>Best Case</b></span>
+            <span class="schip" data-field="lead.createDate">Creada: <b>12/03/2026</b></span>
+            <span class="schip" data-field="lead.dwellDate">Último cambio: <b>hace 18 d</b></span>
+            <span class="schip" data-field="lead.cycleDays">Ciclo: <b>92 d</b></span>
+            <span class="schip" data-field="lead.owner">Comercial: <b>Ana G.</b></span>
+          </div>
+        </div>
+      </div>
 
-      <h2>Qué métricas salen del embudo</h2>
-      <table class="metrics">
-        <tr><th>Métrica</th><th>Cómo se calcula</th><th>Campo(s) fuente</th></tr>
-        <tr><td class="m-name">Conversión</td><td>Ganadas ÷ cerradas (ganadas + perdidas)</td><td><code>stage_id.is_won</code>, <code>active</code></td></tr>
-        <tr><td class="m-name">MRR medio / deal</td><td>Media del MRR mensual de las ganadas con licencia</td><td><code>recurring_revenue_monthly</code></td></tr>
-        <tr><td class="m-name">MRR en pipeline</td><td>Suma del MRR de las oportunidades abiertas</td><td><code>recurring_revenue_monthly</code></td></tr>
-        <tr><td class="m-name">MRR ganado</td><td>Suma del MRR de las ganadas del periodo</td><td><code>recurring_revenue_monthly</code></td></tr>
-        <tr><td class="m-name">Ciclo de venta</td><td>Días de media de creación a Ganado</td><td><code>day_close</code> · <code>date_closed − create_date</code></td></tr>
-        <tr><td class="m-name">Ticket medio</td><td>Media del ingreso esperado de las ganadas</td><td><code>expected_revenue</code></td></tr>
-        <tr><td class="m-name">Forecast ponderado</td><td>Σ ingreso esperado × probabilidad de las abiertas</td><td><code>expected_revenue</code>, <code>probability</code></td></tr>
-        <tr><td class="m-name">Fuga por etapa</td><td>1 − (alcanzan la etapa siguiente ÷ alcanzan esta)</td><td><code>stage_id</code>, <code>sequence</code></td></tr>
-        <tr><td class="m-name">Tiempo parado (dwell)</td><td>Días desde el último cambio de etapa (abiertas)</td><td><code>date_last_stage_update</code></td></tr>
-      </table>
-
-      <div class="grid2" style="margin-top:18px;align-items:start">
-        <div>
-          <h2 style="margin-top:6px">Mapa de campos · crm.lead</h2>
+      <div class="crm-grid">
+        <div class="zone edit">
+          <span class="zone-lbl edit">Edición · mapeo de campos</span>
+          <p class="treehint" style="margin-top:0">Clic en un campo para ver su dato de ejemplo y validarlo (panel derecho). Cambia el desplegable para corregir la asignación; se guarda solo.</p>
+          <h3 style="margin-top:6px">crm.lead</h3>
           <div id="ed-crm-lead"></div>
-          <h2>Filtro de oportunidades</h2>
+          <h3>Filtro de oportunidades</h3>
           <div id="ed-crm-filter"></div>
-          <h2>Etapas · crm.stage</h2>
+          <h3>Etapas · crm.stage</h3>
           <div id="ed-crm-stage"></div>
         </div>
-        <div>
-          <div class="mk-lbl" style="position:sticky;top:10px">Vista aproximada · embudo en la extensión</div>
-          <div class="device" style="position:sticky;top:34px">
-            <div class="mk-sec"><div class="mk-lbl">Embudo del partner</div>
-              <div class="mk-kpis">
-                <div class="mk-kpi"><b>43 %</b><span>conversión</span></div>
-                <div class="mk-kpi"><b>320 €</b><span>MRR/deal</span></div>
-                <div class="mk-kpi"><b>1.240 €</b><span>MRR pipeline</span></div>
-                <div class="mk-kpi"><b>92 d</b><span>ciclo venta</span></div>
-                <div class="mk-kpi"><b>960 €</b><span>MRR ganado</span></div>
-                <div class="mk-kpi"><b>3/7</b><span>ganadas/cerr.</span></div>
+
+        <div class="crm-side">
+          <div class="zone result">
+            <span class="zone-lbl result">Resultado · validación</span>
+            <div id="crmDetail" class="detail">Selecciona un campo (izquierda) o un dato de ejemplo (arriba) para ver qué alimenta en el embudo y marcar si el campo es el correcto.</div>
+          </div>
+          <div class="zone" style="padding:12px">
+            <span class="zone-lbl content">Contenido · embudo</span>
+            <div class="device" id="crm-mockup" style="width:100%;box-shadow:none">
+              <div class="mk-sec"><div class="mk-lbl">Embudo del partner (ejemplo)</div>
+                <div class="mk-kpis">
+                  <div class="mk-kpi" data-kpi="conv"><b>43 %</b><span>conversión</span></div>
+                  <div class="mk-kpi" data-kpi="mrr"><b>320 €</b><span>MRR/deal</span></div>
+                  <div class="mk-kpi" data-kpi="mrr"><b>1.240 €</b><span>MRR pipeline</span></div>
+                  <div class="mk-kpi" data-kpi="cycle"><b>92 d</b><span>ciclo venta</span></div>
+                  <div class="mk-kpi" data-kpi="mrr"><b>960 €</b><span>MRR ganado</span></div>
+                  <div class="mk-kpi" data-kpi="conv"><b>3/7</b><span>ganadas/cerr.</span></div>
+                </div>
+                <div style="margin-top:10px">
+                  <div class="mk-stage" data-kpi="funnel"><div class="sh"><span>Nuevo</span><span>12 · 4.800 €</span></div>
+                    <div class="mk-bar" style="width:100%;background:linear-gradient(90deg,#875A7B,#714B67)">12</div>
+                    <div class="mk-drop">▼ −25 % a Cualificado &nbsp; <span class="mk-dwell" data-kpi="dwell">⏱ 18 d parado</span></div></div>
+                  <div class="mk-stage" data-kpi="funnel"><div class="sh"><span>Cualificado</span><span>9 · 3.600 €</span></div>
+                    <div class="mk-bar" style="width:75%;background:linear-gradient(90deg,#7B5070,#654260)">9</div>
+                    <div class="mk-drop">▼ −33 % a Propuesta &nbsp; <span class="mk-dwell" data-kpi="dwell">⏱ 27 d parado</span></div></div>
+                  <div class="mk-stage" data-kpi="funnel"><div class="sh"><span>Propuesta</span><span>6 · 2.400 €</span></div>
+                    <div class="mk-bar" style="width:50%;background:linear-gradient(90deg,#654260,#5B3D54)">6</div>
+                    <div class="mk-drop">▼ −33 % a Negociación</div></div>
+                  <div class="mk-stage" data-kpi="funnel"><div class="sh"><span>Ganado</span><span>3 ganadas · MRR 960 €</span></div>
+                    <div class="mk-bar" style="width:26%;background:linear-gradient(90deg,#017E84,#015C61)">3</div></div>
+                </div>
+                <div class="cap">▼ fuga entre etapas · ⏱ tiempo parado · el resaltado marca el campo seleccionado</div>
               </div>
-              <div style="margin-top:10px">
-                <div class="mk-stage"><div class="sh"><span>Nuevo</span><span>12 · 4.800 €</span></div>
-                  <div class="mk-bar" style="width:100%;background:linear-gradient(90deg,#875A7B,#714B67)">12</div>
-                  <div class="mk-drop">▼ −25 % a Cualificado &nbsp; <span class="mk-dwell">⏱ 18 d parado</span></div></div>
-                <div class="mk-stage"><div class="sh"><span>Cualificado</span><span>9 · 3.600 €</span></div>
-                  <div class="mk-bar" style="width:75%;background:linear-gradient(90deg,#7B5070,#654260)">9</div>
-                  <div class="mk-drop">▼ −33 % a Propuesta &nbsp; <span class="mk-dwell">⏱ 27 d parado</span></div></div>
-                <div class="mk-stage"><div class="sh"><span>Propuesta</span><span>6 · 2.400 €</span></div>
-                  <div class="mk-bar" style="width:50%;background:linear-gradient(90deg,#654260,#5B3D54)">6</div>
-                  <div class="mk-drop">▼ −33 % a Negociación</div></div>
-                <div class="mk-stage"><div class="sh"><span>Ganado</span><span>3 ganadas · MRR 960 €</span></div>
-                  <div class="mk-bar" style="width:26%;background:linear-gradient(90deg,#017E84,#015C61)">3</div></div>
-              </div>
-              <div class="cap">▼ fuga entre etapas · ⏱ tiempo parado · el resaltado marca el mayor foco</div>
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="zone">
+        <span class="zone-lbl content">Contenido · métricas</span>
+        <h3 style="margin-top:2px">Qué métricas salen del embudo</h3>
+        <table class="metrics">
+          <tr><th>Métrica</th><th>Cómo se calcula</th><th>Campo(s) fuente</th></tr>
+          <tr><td class="m-name">Conversión</td><td>Ganadas ÷ cerradas (ganadas + perdidas)</td><td><code>stage_id.is_won</code>, <code>active</code></td></tr>
+          <tr><td class="m-name">MRR medio / deal</td><td>Media del MRR mensual de las ganadas con licencia</td><td><code>recurring_revenue_monthly</code></td></tr>
+          <tr><td class="m-name">MRR en pipeline</td><td>Suma del MRR de las oportunidades abiertas</td><td><code>recurring_revenue_monthly</code></td></tr>
+          <tr><td class="m-name">MRR ganado</td><td>Suma del MRR de las ganadas del periodo</td><td><code>recurring_revenue_monthly</code></td></tr>
+          <tr><td class="m-name">Ciclo de venta</td><td>Días de media de creación a Ganado</td><td><code>day_close</code> · <code>date_closed − create_date</code></td></tr>
+          <tr><td class="m-name">Ticket medio</td><td>Media del ingreso esperado de las ganadas</td><td><code>expected_revenue</code></td></tr>
+          <tr><td class="m-name">Forecast ponderado</td><td>Σ ingreso esperado × probabilidad de las abiertas</td><td><code>expected_revenue</code>, <code>probability</code></td></tr>
+          <tr><td class="m-name">Fuga por etapa</td><td>1 − (alcanzan la etapa siguiente ÷ alcanzan esta)</td><td><code>stage_id</code>, <code>sequence</code></td></tr>
+          <tr><td class="m-name">Tiempo parado (dwell)</td><td>Días desde el último cambio de etapa (abiertas)</td><td><code>date_last_stage_update</code></td></tr>
+        </table>
       </div>
     </div>
   </section>
@@ -865,8 +923,8 @@ function renderEditor(id){
   const cont=document.getElementById(id); const cands=CANDS[SLOTS[id].cand]||[];
   SLOTS[id].items.forEach(s=>{
     const inSel=cands.includes(s.def);
-    cont.insertAdjacentHTML("beforeend",`<div class="fcard" data-card>
-      <div class="top"><span class="slot">${s.label}</span><span class="path">${s.path}</span></div>
+    cont.insertAdjacentHTML("beforeend",`<div class="fcard" data-card data-field="${s.path}">
+      <div class="top"><span class="slot">${s.label} <span class="vdot" data-vdot></span></span><span class="path">${s.path}</span></div>
       <div class="feeds">${s.feeds.map(f=>`<span class="chip">${f}</span>`).join("")}</div>
       <div class="src">${s.src}</div>
       <div class="row"><label class="mini">${s.kind==="value"?"Valor:":"Campo Odoo:"}</label>
@@ -884,6 +942,60 @@ document.querySelectorAll("[data-card]").forEach(card=>{
   inp.addEventListener("input",()=>{const o=[...sel.options].find(o=>o.value===inp.value);sel.value=o?inp.value:"__custom__";mark(card,inp,def);build();});
 });
 function mark(card,inp,def){card.classList.toggle("changed",inp.value.trim()!==def);}
+
+// ---- CRM: validación interactiva (campo ↔ dato de ejemplo ↔ embudo) ----
+const SAMPLE={
+  "lead.revenue":{v:"4.800 €",kpi:"funnel",feeds:"ticket medio · pipeline · forecast ponderado"},
+  "lead.mrr":{v:"320 €/mes",kpi:"mrr",feeds:"MRR/deal · MRR pipeline · MRR ganado"},
+  "lead.mrrFallback":{v:"320 €/mes",kpi:"mrr",feeds:"MRR (respaldo si no hay mensual)"},
+  "lead.probability":{v:"65 %",kpi:"conv",feeds:"forecast ponderado · ganado de respaldo"},
+  "lead.stage":{v:"Negociación",kpi:"funnel",feeds:"fase del embudo · ganado/perdido"},
+  "lead.active":{v:"activa",kpi:"conv",feeds:"abiertas vs perdidas"},
+  "lead.dwellDate":{v:"hace 18 días",kpi:"dwell",feeds:"tiempo parado en la etapa"},
+  "lead.createDate":{v:"12/03/2026",kpi:"cycle",feeds:"ciclo de venta · cohortes"},
+  "lead.closeDate":{v:"— (abierta)",kpi:"cycle",feeds:"ciclo de venta"},
+  "lead.cycleDays":{v:"92 días",kpi:"cycle",feeds:"ciclo de venta (preferente)"},
+  "lead.deadline":{v:"31/08/2026",kpi:null,feeds:"mes/trimestre del forecast"},
+  "lead.owner":{v:"Ana G.",kpi:"conv",feeds:"estadísticas por PM"},
+  "lead.tags":{v:"Best Case",kpi:null,feeds:"categoría de forecast (etiqueta)"},
+  "lead.partnerAssigned":{v:"Talleres Ejemplo SL",kpi:"funnel",feeds:"carga del pipeline de canal"},
+  "lead.partnerCustomer":{v:"Talleres Ejemplo SL",kpi:"funnel",feeds:"carga como cliente"},
+  "lead.typeFilter":{v:"opportunity",kpi:null,feeds:"filtra oportunidades (no leads)"},
+  "stage.won":{v:"Ganado = sí",kpi:"conv",feeds:"conversión · MRR ganado"},
+  "stage.sequence":{v:"4",kpi:"funnel",feeds:"orden · fuga entre fases"},
+  "stage.name":{v:"Negociación",kpi:"funnel",feeds:"etiqueta de etapa"}
+};
+let valid={}; try{valid=JSON.parse(localStorage.getItem("erpco_valid")||"{}");}catch(e){}
+let selField=null;
+const crmDetail=document.getElementById("crmDetail"),crmMock=document.getElementById("crm-mockup");
+function fieldSourceOf(p){const i=document.querySelector(`[data-path="${p}"]`);return i?i.value.trim():"";}
+function refreshDots(){document.querySelectorAll("[data-card]").forEach(c=>{const d=c.querySelector("[data-vdot]");if(d)d.className="vdot"+(valid[c.dataset.field]?" "+valid[c.dataset.field]:"");});}
+function highlightKpi(k){if(!crmMock)return;crmMock.querySelectorAll(".hl").forEach(e=>e.classList.remove("hl"));if(k)crmMock.querySelectorAll(`[data-kpi="${k}"]`).forEach(e=>e.classList.add("hl"));}
+function labelOf(p){const el=document.querySelector(`.fcard[data-field="${p}"] .slot`);return el?el.textContent.trim():p;}
+function selectField(p){
+  if(!crmDetail)return; selField=p;
+  document.querySelectorAll(".schip.sel,.fcard.sel").forEach(e=>e.classList.remove("sel"));
+  document.querySelectorAll(`[data-field="${p}"]`).forEach(e=>e.classList.add("sel"));
+  const s=SAMPLE[p]||{},st=valid[p];
+  crmDetail.innerHTML=`<div class="d-h">${labelOf(p)} <span class="path">${p}</span></div>
+    <div class="d-row">Campo Odoo mapeado: <b>${fieldSourceOf(p)||"—"}</b></div>
+    <div class="d-row">Dato de ejemplo (Talleres Ejemplo SL): <b class="ex">${s.v||"—"}</b></div>
+    <div class="d-row">Alimenta en el embudo: <b>${s.feeds||"—"}</b></div>
+    <div class="d-val"><span>¿El campo es el correcto para este dato?</span>
+      <button class="ok${st==="ok"?" on":""}" data-v="ok">✓ Correcto</button>
+      <button class="rev${st==="rev"?" on":""}" data-v="rev">✗ Revisar</button></div>`;
+  crmDetail.querySelectorAll("[data-v]").forEach(b=>b.addEventListener("click",()=>{
+    if(valid[p]===b.dataset.v)delete valid[p]; else valid[p]=b.dataset.v;
+    localStorage.setItem("erpco_valid",JSON.stringify(valid));refreshDots();selectField(p);}));
+  highlightKpi(s.kpi);
+}
+document.addEventListener("click",e=>{const el=e.target.closest("[data-field]");if(!el)return;if(e.target.closest("select,input,option,button,a,textarea"))return;selectField(el.dataset.field);});
+document.querySelectorAll("[data-path]").forEach(i=>{
+  i.addEventListener("focus",()=>selectField(i.dataset.path));
+  i.addEventListener("input",()=>{if(selField===i.dataset.path)selectField(selField);});
+});
+document.querySelectorAll("[data-sel]").forEach(s=>s.addEventListener("focus",()=>{const c=s.closest("[data-field]");if(c)selectField(c.dataset.field);}));
+refreshDots();
 
 // Reglas de años
 const rulesEl=document.getElementById("rules");
