@@ -74,6 +74,22 @@
   .box p{margin:0;font-size:13.5px;color:#4a4752}
   .pill{display:inline-block;font-size:11px;background:#f0e9f4;color:var(--pu);border:1px solid #e2d6ea;border-radius:20px;padding:2px 9px;margin:0 4px 4px 0}
   .pill.teal{background:#e9f5f5;color:var(--teal);border-color:#cfe7e7}
+  /* Árbol navegable de fuentes de datos (details/summary nativo, cero JS) */
+  .tree{margin:12px 0;font-size:13.5px}
+  .tree>details{border:1px solid var(--line);border-radius:12px;background:#fff;padding:4px 14px;margin-bottom:9px;box-shadow:var(--shadow)}
+  .tree details details{margin:2px 0 2px 6px;padding-left:13px;border-left:2px solid #ece6f1}
+  .tree summary{cursor:pointer;list-style:none;padding:6px 0;font-weight:600;color:var(--pu);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tree summary::-webkit-details-marker{display:none}
+  .tree summary::before{content:"▸";color:var(--pu2);font-size:11px;transition:transform .12s}
+  .tree details[open]>summary::before{transform:rotate(90deg)}
+  .tree summary .tag{font-family:var(--mono);font-size:10.5px;color:var(--pu2);background:#f3eef6;border-radius:5px;padding:1px 6px;font-weight:500}
+  .tree summary .cnt{font-size:11px;color:var(--mut);font-weight:500}
+  .tree ul{margin:2px 0 9px;padding-left:28px}
+  .tree li{margin:4px 0;color:#4a4752}
+  .tree li b{color:var(--pu)}
+  .tree .ex{color:var(--teal)}
+  .tree .ex::before{content:"“"} .tree .ex::after{content:"”"}
+  .treehint{font-size:12px;color:var(--mut);margin:4px 0 10px}
 
   /* ---------- Tabla de métricas ---------- */
   table.metrics{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
@@ -252,16 +268,10 @@
         <div>
           <h3>Qué hace</h3>
           <p class="lead">Escucha por micrófono (Web Speech API, español de España) con un vigilante que reinicia la
-          escucha cuando Chrome la corta sola. Detecta los temas que van saliendo y dispara tarjetas contextuales.
-          Si en la charla aparece «embudo», «conversión» o «forecast», lanza además el análisis del CRM.</p>
-          <h3>Tipos de sesión</h3>
-          <p class="muted">La misma píldora entrega contenido distinto según el momento comercial:</p>
-          <span class="pill">Calificación — preguntas para cualificar</span>
-          <span class="pill">Venta — flujo + sondas de personalización</span>
-          <span class="pill">Demo — guion ordenado con momentos «guau»</span>
-          <span class="pill">Estratégica — temas de formación por área</span>
-          <div class="guide" style="margin-top:14px"><b>Fuente de datos:</b> voz de la reunión (local, no se sube a
-          ningún sitio) + el cerebro de conocimiento. No usa el CRM. Configurable en la extensión, no en este mapa.</div>
+          escucha cuando Chrome la corta sola. Detecta los temas que van saliendo, dispara tarjetas contextuales y,
+          si en la charla aparece «embudo», «conversión» o «forecast», lanza además el análisis del CRM.</p>
+          <div class="guide"><b>Fuente de datos:</b> la voz de la reunión (local, no sale del navegador) + el cerebro
+          de conocimiento. No usa el CRM. Se configura en la extensión, no en este mapa de campos.</div>
         </div>
         <div>
           <div class="mk-lbl" style="color:var(--mut)">Vista aproximada · panel de la extensión</div>
@@ -285,6 +295,45 @@
           </div>
         </div>
       </div>
+
+      <h2>Cómo funciona · flujo en vivo</h2>
+      <div class="tree">
+        <details open><summary>Motor de voz <span class="tag">Web Speech API · es-ES</span></summary>
+          <ul><li>Transcripción continua en español de España.</li>
+          <li>Vigilante anti-cortes: reinicia la escucha cuando Chrome la corta sola.</li>
+          <li><b>100% local:</b> el audio no se sube a ningún servidor.</li></ul></details>
+        <details><summary>Detección de temas <span class="tag">context-engine</span></summary>
+          <ul><li>Palabras clave de la charla → módulo o tema (facturación, almacén, ventas…).</li>
+          <li>Disparo del CRM: si suena «embudo», «conversión» o «forecast», lanza el análisis del embudo.</li></ul></details>
+        <details><summary>Rotación de tarjetas</summary>
+          <ul><li>La tarjeta nueva llega arriba; la anterior se pliega (no se pierde, se reabre con un clic).</li>
+          <li>Cualquier punto se despliega para profundizar sobre la marcha.</li></ul></details>
+      </div>
+
+      <h2>Tipos de sesión · qué entrega cada uno</h2>
+      <p class="treehint">La misma píldora cambia lo que sugiere según el momento comercial. Despliega para ver ejemplos reales del cerebro.</p>
+      <div class="tree">
+        <details><summary>Estándar <span class="cnt">arranque neutro</span></summary>
+          <ul><li>Sugerencias generales mientras se define el momento de la reunión.</li></ul></details>
+        <details open><summary>Calificación <span class="cnt">preguntas para cualificar</span></summary>
+          <ul>
+            <li><b>CRM:</b> <span class="ex">¿Tenéis etapas de venta definidas o cada comercial lleva su método?</span></li>
+            <li><b>Ventas:</b> <span class="ex">¿Tenéis venta recurrente (suscripciones, mantenimientos, cuotas)?</span></li>
+            <li><b>Inventario:</b> <span class="ex">¿Habéis perdido ventas por rotura de stock este año?</span> · <span class="ex">¿Cómo hacéis el inventario físico y cuánto os lleva?</span></li>
+            <li><b>Contabilidad:</b> <span class="ex">¿La facturación sale del mismo sistema donde está la venta?</span></li>
+            <li><b>Web / eCommerce:</b> <span class="ex">¿Cuántas visitas tiene la web y cuántas acaban en contacto o venta?</span></li>
+            <li><b>TPV:</b> <span class="ex">¿Qué pasa cuando se corta internet en plena venta?</span></li>
+            <li class="muted">+ RRHH, Proyecto, Manufactura, Suscripciones…</li>
+          </ul></details>
+        <details><summary>Venta <span class="cnt">profundizar + personalizaciones</span></summary>
+          <ul><li>Sondas para descubrir qué habría que adaptar y acotar el alcance.</li>
+          <li><b>Inventario:</b> código de barras — recepción, picking y del inventario anual al continuo.</li></ul></details>
+        <details><summary>Demo <span class="cnt">guion ordenado con momentos «guau»</span></summary>
+          <ul><li><b>Regla de oro:</b> usa SUS datos (su producto, su cliente tipo), nunca datos genéricos.</li>
+          <li><b>Regla de 3:</b> máximo 3 momentos «guau» por demo, uno cada ~10 minutos.</li></ul></details>
+        <details><summary>Estratégica <span class="cnt">temas de formación por área</span></summary>
+          <ul><li>Marcos de venta (Challenger, Sandler, MEDDIC) y de marketing por área.</li></ul></details>
+      </div>
     </div>
   </section>
 
@@ -296,16 +345,36 @@
     <div class="pad">
       <h2>Tres tipos de tarjeta</h2>
       <div class="grid3">
-        <div class="box"><h4>Preguntas</h4><p>Qué preguntar ahora para avanzar: cualificar dolor, cuantificar,
-          descubrir procesos y personas implicadas.</p><span class="pill">según tema detectado</span></div>
+        <div class="box"><h4>Preguntas</h4><p>Qué preguntar ahora para avanzar: cualificar el dolor, cuantificarlo,
+          descubrir procesos y personas implicadas.</p>
+          <p class="ex" style="color:var(--teal);font-size:12.5px;margin-top:6px">Ej.: ¿cuántas personas tocan ese proceso y cuánto tiempo les lleva a la semana?</p>
+          <span class="pill">según tema detectado</span></div>
         <div class="box"><h4>Puntos «guau»</h4><p>Qué enseñar para impactar: automatismos, integración entre módulos,
-          datos en tiempo real. El momento de demostrar valor.</p><span class="pill teal">momento demo</span></div>
+          datos en tiempo real. El momento de demostrar valor.</p>
+          <p class="ex" style="color:var(--teal);font-size:12.5px;margin-top:6px">Ej.: al facturar, el stock se descuenta solo y la tesorería se actualiza sola.</p>
+          <span class="pill teal">momento demo</span></div>
         <div class="box"><h4>Acciones estratégicas</h4><p>Qué mover a nivel de cuenta: siguiente paso, quién más debe
-          entrar, qué preparar para la próxima.</p><span class="pill">cierre / seguimiento</span></div>
+          entrar, qué preparar para la próxima.</p>
+          <p class="ex" style="color:var(--teal);font-size:12.5px;margin-top:6px">Ej.: segundo encuentro con la persona de finanzas para ver el cierre mensual.</p>
+          <span class="pill">cierre / seguimiento</span></div>
       </div>
-      <div class="guide"><b>Fuente:</b> tema detectado en la voz + cerebro de conocimiento (base + pack ERPBOT).
-      No consume el CRM, así que no entra en este mapa de campos.</div>
-      <div style="margin-top:16px" class="mk-lbl">Vista aproximada · tarjetas apiladas</div>
+
+      <h2>De dónde sale cada tarjeta</h2>
+      <p class="treehint">El tema detectado en la voz elige la tarjeta; el contenido viene del cerebro (no del CRM).</p>
+      <div class="tree">
+        <details open><summary>Preguntas <span class="tag">SESSION_KNOWLEDGE · calificación</span></summary>
+          <ul><li>Banco de preguntas por módulo según el tema detectado.</li>
+          <li><b>Ejemplo CRM:</b> <span class="ex">¿Tenéis etapas de venta definidas o cada comercial lleva su método?</span></li>
+          <li>+ objeciones frecuentes del cerebro para anticiparse.</li></ul></details>
+        <details><summary>Puntos «guau» <span class="tag">SESSION_KNOWLEDGE · demo + features de módulos</span></summary>
+          <ul><li>Automatismos e integraciones de las <i>features</i> de cada módulo Odoo.</li>
+          <li><b>Regla:</b> usa SUS datos; máximo 3 «guau», uno cada ~10 minutos.</li></ul></details>
+        <details><summary>Acciones estratégicas <span class="tag">ventas · metodologías</span></summary>
+          <ul><li>Siguiente paso según el marco de venta: <b>Challenger</b>, <b>Sandler</b> o <b>MEDDIC</b>.</li>
+          <li>Quién debe entrar (comprador económico, champion) y qué preparar para la próxima.</li></ul></details>
+      </div>
+
+      <div class="mk-lbl" style="margin-top:8px">Vista aproximada · tarjetas apiladas</div>
       <div class="device sml">
         <div class="mk-sec">
           <div class="mk-sugg gold"><div class="t">Punto «guau»</div>Enséñale el panel de tesorería: previsión de
@@ -324,31 +393,53 @@
       <p>Acceso rápido a la información que interesa para hablar con criterio de una temática: módulos de Odoo,
       objeciones frecuentes y casos. Se puede ampliar con un pack remoto privado.</p></div>
     <div class="pad">
-      <div class="grid2">
-        <div>
-          <h3>Qué encuentras</h3>
-          <span class="pill">Módulos Odoo · qué resuelven</span>
-          <span class="pill">Objeciones y cómo rebatirlas</span>
-          <span class="pill">Casos y cifras de referencia</span>
-          <span class="pill">Sugerencias por temática</span>
-          <h3>De dónde sale</h3>
-          <p class="lead">Cerebro base + pack ERPBOT generado localmente (privado), y opcionalmente un pack remoto
-          desde una URL raw de GitHub privada. La IA generativa está apagada a propósito hasta validar la política
-          interna de IA de Odoo.</p>
-          <div class="guide"><b>No usa el CRM del cliente:</b> es conocimiento de producto, no datos del partner.
-          Por eso tampoco entra en este mapa de campos.</div>
-        </div>
-        <div>
-          <div class="mk-lbl">Vista aproximada · acceso por píldoras</div>
-          <div class="device sml"><div class="mk-sec"><div class="mk-lbl">Knowledge brain</div>
-            <span class="mk-chip">Facturación</span> <span class="mk-chip">Inventario</span>
-            <span class="mk-chip">CRM</span> <span class="mk-chip">Fabricación</span>
-            <span class="mk-chip">Contabilidad</span> <span class="mk-chip">RRHH</span>
-            <div class="mk-sugg" style="margin-top:9px"><div class="t">Inventario · qué resuelve</div>
-              Stock en tiempo real, reglas de reabastecimiento, trazabilidad por lote y multi-almacén.</div>
-          </div></div>
-        </div>
+      <p class="lead">Acceso rápido al conocimiento para hablar con criterio de una temática. Todo es local y privado;
+      la IA generativa está apagada a propósito hasta validar la política interna de IA de Odoo.</p>
+
+      <h2>Fuentes de conocimiento · árbol</h2>
+      <p class="treehint">Despliega cada fuente para ver qué contiene. Ninguna usa el CRM del cliente (es conocimiento de producto), por eso no entran en el mapa de campos.</p>
+      <div class="tree">
+        <details open><summary>Cerebro base <span class="tag">knowledge-brain.js · local</span></summary>
+          <ul>
+            <li><details><summary>Odoo</summary>
+              <ul>
+                <li><b>Módulos (8):</b> CRM · Inventario · Contabilidad · Ventas · RRHH · Proyecto · Manufactura · Sitio Web + eCommerce <span class="cnt">(qué resuelve + features + tips)</span></li>
+                <li><b>Objeciones:</b> las frecuentes + cómo rebatirlas.</li>
+                <li><b>Casos de éxito (3):</b> Retail/Moda · Manufactura · Servicios/Consultoría <span class="cnt">(reto → solución → resultados → ROI)</span></li>
+              </ul></details></li>
+            <li><details><summary>Marketing</summary>
+              <ul>
+                <li><b>Estrategias (4):</b> Inbound · Content · Email · Paid.</li>
+                <li><b>Embudo:</b> TOFU · MOFU · BOFU (objetivo, tácticas, métricas).</li>
+              </ul></details></li>
+            <li><details><summary>Ventas</summary>
+              <ul>
+                <li><b>Metodologías (3):</b> The Challenger Sale · Sandler · MEDDIC.</li>
+                <li><b>Técnicas:</b> sondas de dolor, cuantificación del coste, control de la conversación.</li>
+              </ul></details></li>
+          </ul></details>
+
+        <details><summary>Pack ERPBOT <span class="tag">knowledge-pack.json · Odoo 19 · local</span> <span class="cnt">23 módulos</span></summary>
+          <ul><li>Cheat-sheets con tips operativos de Odoo 19, un fichero por módulo:</li>
+          <li class="muted">ai · accounting · crm · documents · website · expenses · hr · inventory · knowledge · mocosts · manufacturing · marketing · pos · project · purchase · rental · sales · spain-localization · spreadsheet · studio · subscriptions · survey · timesheets</li>
+          <li><b>Ejemplo (CRM):</b> «Log as Note: registra en chatter» · «Send as Message: abre popup de email».</li></ul></details>
+
+        <details><summary>Pack remoto <span class="tag">GitHub raw privado · opcional</span></summary>
+          <ul><li>Amplía el cerebro con módulos, objeciones, casos y sugerencias extra desde una URL raw privada (con token).</li>
+          <li>Se fusiona con el cerebro base y se cachea en el navegador.</li></ul></details>
+
+        <details><summary>IA generativa <span class="tag">apagada a propósito</span></summary>
+          <ul><li>Desactivada hasta validar la política interna de IA de Odoo (LOPD/GDPR). El chat opcional (Gemini) solo enviaría tu pregunta + conocimiento, nunca datos del cliente.</li></ul></details>
       </div>
+
+      <div class="mk-lbl" style="margin-top:8px">Vista aproximada · acceso por píldoras</div>
+      <div class="device sml"><div class="mk-sec"><div class="mk-lbl">Knowledge brain</div>
+        <span class="mk-chip">Facturación</span> <span class="mk-chip">Inventario</span>
+        <span class="mk-chip">CRM</span> <span class="mk-chip">Fabricación</span>
+        <span class="mk-chip">Contabilidad</span> <span class="mk-chip">RRHH</span>
+        <div class="mk-sugg" style="margin-top:9px"><div class="t">Inventario · qué resuelve</div>
+          Stock en tiempo real, reglas de reabastecimiento, trazabilidad por lote y multi-almacén.</div>
+      </div></div>
     </div>
   </section>
 
@@ -421,66 +512,75 @@
 
   <!-- ============ FORECAST ============ -->
   <section class="tab" data-tabid="forecast">
-    <div class="head"><div class="eyebrow">Bloque 3 · modelo del equipo PM</div><h1>Forecast por etapas (modelo PM)</h1>
-      <p>Objetivo: desviación del forecast cercana a cero y visibilidad clara del pipeline a 1–6 meses. Cada etapa del
-      pipeline es una categoría de forecast con su probabilidad y su regla de temporalidad. Qualified se proyecta por
-      estadística individual de cada PM.</p></div>
+    <div class="head"><div class="eyebrow">Bloque 3 · Comité de los Cuatro</div><h1>Forecast · Definición Final</h1>
+      <p>Objetivo: desviación del forecast cercana a cero y visibilidad clara a 1–6 meses. La clasificación vive en
+      <b>etiquetas del CRM de Odoo</b> — Commit · Best Case · Pipeline · Initial — y cada etapa del embudo exige unos
+      requisitos para entrar en el forecast.</p></div>
     <div class="pad">
-      <div class="warnbox"><b>Estado en la extensión (honesto).</b> Hoy el forecast se calcula por <b>trimestres</b>
-        con una cascada de valoración (presupuesto mín → ingreso esperado → MRR×12×años) y probabilidad por etapa
-        <b>global, no por PM</b>. Para seguir este modelo hay que cablear: (1) mapear las 4 etapas a sus categorías,
-        (2) pasar de trimestres a <b>meses</b> (1–6), (3) calcular conversión/ticket/ciclo <b>por PM</b> (user_id),
-        (4) aplicar las reglas de temporalidad. El mapa de abajo ya recoge los campos y la correspondencia
-        etapa→categoría; el cálculo se adapta como fase 2.</div>
+      <div class="warnbox"><b>Estado en la extensión (honesto).</b> Hoy el forecast se calcula por <b>trimestres</b> con
+        cascada de valoración y probabilidad por etapa global. Para seguir esta Definición Final hay que cablear:
+        (1) leer la <b>etiqueta</b> (Commit/Best Case/Pipeline/Initial), (2) aplicar su probabilidad y su regla de
+        fecha de cierre, (3) pasar a <b>meses</b>, (4) valorar con el <b>MRR</b> según la regla de cada etiqueta. El
+        mapa de abajo ya recoge la etiqueta y la correspondencia etapa→categoría; el cálculo se adapta como fase 2.</div>
 
-      <h2>Modelo de forecasting del equipo (canónico)</h2>
+      <h2>Clasificación · las cuatro etiquetas</h2>
+      <p class="treehint">Son etiquetas (tags) del CRM de Odoo. Definen cómo entra cada oportunidad en el forecast.</p>
       <table class="metrics">
-        <tr><th>Etapa</th><th>Categoría</th><th>Criterio y certeza</th><th>Prob.</th><th>Temporalidad (cierre)</th></tr>
-        <tr><td class="m-name">Negotiation</td><td><span class="pill teal">Commit</span></td>
-          <td>Cerradas por el partner con consultoría previa a la firma, o certeza contrastada &gt; 90 %.</td>
-          <td>90–100 %</td><td>Día exacto de la firma · siempre dentro del mes en curso.</td></tr>
-        <tr><td class="m-name">Proposition</td><td><span class="pill">Best Case</span></td>
-          <td>Propuesta multi-partner o con riesgo de pérdida latente. Valor estimado de facturación.</td>
-          <td>10–90 %</td><td>Mes estimado de firma · siempre un mes futuro al actual.</td></tr>
-        <tr><td class="m-name">Qualified Sponsor</td><td><span class="pill">Pipeline corto plazo</span></td>
-          <td>Calificación avanzada, demo hecha, propuesta por el partner, aún sin presupuesto de licencias.</td>
-          <td>10–90 %</td><td>Mes estimado de cierre · máximo 3 meses vista.</td></tr>
-        <tr><td class="m-name">Qualified</td><td><span class="pill">Proyección estadística</span></td>
-          <td>Iniciales, sin usuarios, fechas ni importes precisos.</td>
-          <td>Histórico del PM</td><td>Estimación estadística · 3–6 meses vista.</td></tr>
+        <tr><th>Etiqueta</th><th>Significado y reglas</th><th>Prob.</th><th>Fecha de cierre · MRR</th><th>¿Se compromete?</th></tr>
+        <tr><td><span class="pill" style="background:#e6f4ea;color:#1f7a44;border-color:#bfe3cc">Commit</span></td>
+          <td>Todo aclarado, sin competencia. La fecha de cierre coincide con la del presupuesto.</td>
+          <td>&gt; 90 %</td><td>Cierre = fecha del presupuesto · MRR del contrato en negociación.</td><td><b>Sí, al 100 %</b></td></tr>
+        <tr><td><span class="pill teal">Best Case</span></td>
+          <td>Muy probable. Va al «Optimistic»; el MRR pasa a Commit al entrar en Negociación.</td>
+          <td>50–85 %</td><td>Cierre dentro del mes en curso · MRR del contrato mínimo mandado.</td><td>Sí, al Optimistic</td></tr>
+        <tr><td><span class="pill" style="background:#fff1e0;color:#b25a00;border-color:#f0d9b8">Pipeline</span></td>
+          <td>Activa pero con riesgo de desplazamiento.</td>
+          <td>20–50 %</td><td>Cierre máximo a 2 meses vista (fuerza seguimiento proactivo).</td><td>Con fecha de cierre</td></tr>
+        <tr><td><span class="pill" style="background:#f0f0f2;color:#6b6772;border-color:#e0dde4">Initial</span></td>
+          <td>Muy verde o estancada.</td>
+          <td>&lt; 20 %</td><td>—</td><td>No computa</td></tr>
       </table>
 
-      <h2>Detalle operativo por etapa</h2>
+      <h2>El embudo y sus exigencias</h2>
+      <p class="treehint">Requisito acumulativo: sin cumplir el de una etapa, la oportunidad no avanza.</p>
+      <table class="metrics">
+        <tr><th>Etapa del CRM</th><th>Requisito clave (acumulativo)</th><th>Entra en el forecast como</th></tr>
+        <tr><td class="m-name">Nuevo</td><td>Todas las oportunidades que aún no cumplen criterios iniciales.</td><td>— (Initial)</td></tr>
+        <tr><td class="m-name">Calificado</td><td>Necesidad real, presupuesto inicial, fecha estimada y <b>nº de empleados</b> (para aproximar usuarios).</td><td><span class="pill" style="background:#fff1e0;color:#b25a00;border-color:#f0d9b8">Pipeline</span> · usuarios mínimos y 1 año</td></tr>
+        <tr><td class="m-name">Qualified Sponsor</td><td>Usuarios claros y proyecto de servicios presentado por el partner.</td><td><span class="pill teal">Best Case</span> · a 1 mes vista</td></tr>
+        <tr><td class="m-name">Propuesta</td><td>Cliente ha definido el partner al 100 % y hay presupuesto formal de licencias.</td><td><span class="pill teal">Best Case</span></td></tr>
+        <tr><td class="m-name">Negociación</td><td>Presupuesto de servicios firmado y fecha de firma.</td><td><span class="pill" style="background:#e6f4ea;color:#1f7a44;border-color:#bfe3cc">Commit</span></td></tr>
+        <tr><td class="m-name">Ganado</td><td>Contrato firmado. Alimenta el histórico. Ajustar MRR final firmado y etiqueta de usuarios finales.</td><td>Histórico</td></tr>
+      </table>
+
+      <h2>Detalle operativo por etiqueta</h2>
       <div class="grid2">
-        <div class="box"><h4>A · Negotiation → Commit</h4><p>El core del mes en curso. Solo operaciones ya ganadas por
-          el partner (fase administrativa/consultoría) o &gt; 90 % de confirmación del cliente. El PM compromete el
-          <b>día exacto de la firma</b> en el CRM.</p></div>
-        <div class="box"><h4>B · Proposition → Best Case</h4><p>Si está cotizada por varios partners o hay riesgo real,
-          se mantiene aquí. Se planifica <b>siempre a un mes posterior</b> al actual; fecha a nivel de mes.</p></div>
-        <div class="box"><h4>C · Qualified Sponsor → corto plazo</h4><p>Ya hay relación (demo/calificación avanzada) pero
-          no se ha lanzado el presupuesto de licencias. Mes de cierre estimado, <b>nunca más de 3 meses</b>.</p></div>
-        <div class="box"><h4>D · Qualified → estadística (3–6 m)</h4><p>Se abandona la estimación manual del PM: el sistema
-          calcula MRR y fecha con la <b>conversión, ticket y ciclo históricos de ese PM</b>. El PM actualiza importe y
-          fecha en cuanto la opp pasa a Qualified Sponsor.</p></div>
+        <div class="box"><h4>Commit</h4><p>Todo aclarado y sin competencia. La <b>fecha de cierre coincide con la del
+          presupuesto</b> y se anota el <b>MRR del contrato en negociación</b>. Se compromete al 100 %.</p></div>
+        <div class="box"><h4>Best Case</h4><p>Muy probable, cierre <b>dentro del mes en curso</b>. Se anota el <b>MRR del
+          contrato mínimo</b> mandado. Va al Optimistic; el MRR pasa a Commit al entrar en Negociación.</p></div>
+        <div class="box"><h4>Pipeline</h4><p>Activa con riesgo de desplazamiento. Fecha de cierre a <b>máximo 2 meses</b>
+          para forzar un seguimiento proactivo.</p></div>
+        <div class="box"><h4>Initial</h4><p>Muy verde o estancada (&lt; 20 %). <b>No computa</b> hasta cumplir los
+          criterios de Calificado.</p></div>
       </div>
 
-      <h2>Cómo se calcula (métricas del modelo)</h2>
+      <h2>Cómo se calcula (datos que usa)</h2>
       <table class="metrics">
-        <tr><th>Métrica</th><th>Cómo se calcula</th><th>Campo(s) fuente</th></tr>
-        <tr><td class="m-name">Categoría de la opp</td><td>Por la etapa: Negotiation→Commit · Proposition→Best Case · Qualified Sponsor→corto plazo · Qualified→estadística</td><td><code>stage_id</code> (por nombre → <code>rules.categoryByStage</code>)</td></tr>
-        <tr><td class="m-name">Commit del mes</td><td>Opps en Negotiation, valor comprometido, cierre = día de firma del mes en curso</td><td><code>stage_id</code>, <code>date_deadline</code>, <code>recurring_revenue_monthly</code></td></tr>
-        <tr><td class="m-name">Best Case / corto plazo</td><td>Opps en Proposition / Qualified Sponsor, importe estimado, cierre a mes (≤ 3 m en Sponsor)</td><td><code>stage_id</code>, <code>date_deadline</code>, <code>expected_revenue</code></td></tr>
-        <tr><td class="m-name">Conversión por PM</td><td>Ganadas ÷ cualificadas de ese PM (histórico)</td><td><code>user_id</code>, <code>stage_id.is_won</code></td></tr>
-        <tr><td class="m-name">Ticket medio por PM</td><td>Importe/MRR medio de los cierres de ese PM</td><td><code>user_id</code>, <code>recurring_revenue_monthly</code></td></tr>
-        <tr><td class="m-name">Ciclo medio (meses) por PM</td><td>Media de Qualified a Won de ese PM</td><td><code>user_id</code>, <code>day_close</code></td></tr>
-        <tr><td class="m-name">Proyección estadística (Qualified)</td><td>MRR y fecha estimados = ticket × conversión, cierre = creación + ciclo (3–6 m)</td><td><code>user_id</code>, <code>create_date</code>, <code>recurring_revenue_monthly</code></td></tr>
+        <tr><th>Dato</th><th>Regla</th><th>Campo(s) Odoo</th></tr>
+        <tr><td class="m-name">Categoría</td><td>La etiqueta del CRM; si falta, se deriva del nombre de la etapa</td><td><code>tag_ids</code> · <code>stage_id</code> → <code>rules.categoryByStage</code></td></tr>
+        <tr><td class="m-name">Probabilidad</td><td>Commit &gt;90 · Best Case 50–85 · Pipeline 20–50 · Initial &lt;20</td><td>por etiqueta (+ <code>probability</code>)</td></tr>
+        <tr><td class="m-name">Fecha de cierre</td><td>Commit = fecha del presupuesto · Best Case = mes en curso · Pipeline ≤ 2 meses</td><td><code>date_deadline</code></td></tr>
+        <tr><td class="m-name">Valor (MRR)</td><td>Commit = MRR en negociación · Best Case = MRR del contrato mínimo</td><td><code>recurring_revenue_monthly</code></td></tr>
+        <tr><td class="m-name">Usuarios · año</td><td>Calificado entra con usuarios mínimos y 1 año (nº empleados aproxima usuarios)</td><td>nº empleados · usuarios (CRM)</td></tr>
+        <tr><td class="m-name">Estadística por PM</td><td>Conversión, ticket y ciclo históricos del PM para etapas tempranas</td><td><code>user_id</code>, <code>is_won</code>, <code>day_close</code></td></tr>
       </table>
 
       <div class="grid2" style="margin-top:18px;align-items:start">
         <div>
           <h2 style="margin-top:6px">Etapa → categoría de forecast</h2>
-          <div class="guide">Cómo reconoce la extensión cada categoría: por el nombre de la etapa. Ajusta la expresión
-            si tus etapas se llaman distinto. Se evalúa en orden; la primera que casa gana (Sponsor antes que Qualified).</div>
+          <div class="guide">La categoría sale de la <b>etiqueta</b> del CRM. Como respaldo, la extensión la deduce del
+            nombre de la etapa con estas reglas (la primera que casa gana; Sponsor antes que Calificado).</div>
           <div class="box"><div id="catRules"></div>
             <div class="row" style="margin-top:8px"><button class="act ghost" id="addCatRule">+ regla</button>
               <label class="mini" style="min-width:auto">Horizonte (meses):</label>
@@ -498,19 +598,19 @@
               <input type="text" id="defYears" class="yr" value="1"></div></div>
         </div>
         <div>
-          <div class="mk-lbl">Vista aproximada · forecast por categorías (propuesta modelo PM)</div>
+          <div class="mk-lbl">Vista aproximada · forecast por etiqueta (Definición Final)</div>
           <div class="device">
-            <div class="mk-sec"><div class="mk-lbl">Forecast · próximos 6 meses</div>
-              <div class="mk-sugg teal"><div class="t">Commit · mes en curso</div>3.200 €/mes MRR · 2 opps · firma con día exacto</div>
-              <div class="mk-sugg"><div class="t">Best Case · mes +1</div>1.800 €/mes MRR · 3 opps · riesgo/multi-partner</div>
-              <div class="mk-sugg gold"><div class="t">Corto plazo · ≤ 3 meses</div>2.400 €/mes MRR · 4 opps (Qualified Sponsor)</div>
-              <div class="mk-sugg" style="border-left-color:#8b8397"><div class="t" style="color:#6b6772">Estadística · 3–6 meses</div>1.500 €/mes MRR · proyección por PM</div>
+            <div class="mk-sec"><div class="mk-lbl">Forecast · próximos meses</div>
+              <div class="mk-sugg" style="border-left-color:#1f7a44"><div class="t" style="color:#1f7a44">Commit · mes en curso</div>3.200 €/mes MRR · 2 opps · fecha = presupuesto</div>
+              <div class="mk-sugg teal"><div class="t">Best Case · mes en curso / +1</div>1.800 €/mes MRR · 3 opps · MRR mínimo mandado</div>
+              <div class="mk-sugg gold"><div class="t">Pipeline · ≤ 2 meses</div>2.400 €/mes MRR · 4 opps · riesgo de desplazamiento</div>
+              <div class="mk-sugg" style="border-left-color:#8b8397"><div class="t" style="color:#6b6772">Initial · no computa</div>oportunidades muy verdes</div>
               <table class="mk-tbl" style="margin-top:10px">
                 <tr><th>PM</th><th>Conv.</th><th>Ticket</th><th>Ciclo</th></tr>
                 <tr><td>PM A</td><td>42 %</td><td>310 €</td><td>3,1 m</td></tr>
                 <tr><td>PM B</td><td>28 %</td><td>270 €</td><td>4,0 m</td></tr>
               </table>
-              <div class="cap" style="margin-top:8px">Estadística por PM · el importe/fecha manual manda en cuanto avanza a Sponsor.</div>
+              <div class="cap" style="margin-top:8px">La etiqueta manda; la estadística por PM cubre las etapas tempranas.</div>
             </div>
           </div>
         </div>
@@ -642,7 +742,7 @@ const CANDS={
   lead:["expected_revenue","prorated_revenue","recurring_revenue_monthly","recurring_revenue",
     "recurring_revenue_monthly_prorated","probability","automated_probability","stage_id","active",
     "date_last_stage_update","create_date","date_open","date_closed","day_close","day_open","date_deadline",
-    "date_conversion","partner_id","partner_assigned_id","user_id","team_id"],
+    "date_conversion","partner_id","partner_assigned_id","user_id","team_id","tag_ids"],
   stage:["is_won","sequence","name","id","fold"],
   quote:["amount_untaxed","amount_total","amount_untaxed_signed","state","opportunity_id"],
   value:["opportunity","lead"]
@@ -658,7 +758,9 @@ const SLOTS={
     {path:"lead.probability",def:"probability",label:"Probabilidad",feeds:["forecast ponderado","categorías Commit/Best Case"],
      src:"Probabilidad 0–100. Modelo del equipo: Commit 90–100%, Best Case y Corto plazo 10–90%. Si las etapas no marcan is_won, prob=100 detecta ganado."},
     {path:"lead.owner",def:"user_id",label:"Comercial / PM",feeds:["estadísticas por PM (conversión · ticket · ciclo)"],
-     src:"Responsable de la oportunidad. El modelo del equipo calcula conversión, ticket medio y ciclo de venta POR PM (no global) para la proyección estadística de Qualified."},
+     src:"Responsable de la oportunidad. El modelo del equipo calcula conversión, ticket medio y ciclo de venta POR PM (no global) para la proyección estadística de las etapas tempranas."},
+    {path:"lead.tags",def:"tag_ids",label:"Etiqueta de forecast",feeds:["categoría Commit / Best Case / Pipeline / Initial"],
+     src:"Etiqueta (tag) del CRM que clasifica la oportunidad en el forecast (Comité de los Cuatro): Commit >90% · Best Case 50-85% · Pipeline 20-50% · Initial <20%. Si falta, se deduce del nombre de la etapa."},
     {path:"lead.stage",def:"stage_id",label:"Etapa",feeds:["fases del embudo","ganado/perdido","fuga"],
      src:"Etapa del CRM. Agrupa el embudo por fases y ordena la caída entre etapas."},
     {path:"lead.active",def:"active",label:"Activo / archivado",feeds:["abiertas vs perdidas"],
@@ -737,8 +839,8 @@ document.getElementById("addRule").addEventListener("click",()=>{rulesEl.appendC
 document.getElementById("defYears").addEventListener("input",build);
 
 // Etapa → categoría de forecast (modelo PM)
-const CATS=[["commit","Commit · Negotiation"],["bestcase","Best Case · Proposition"],["shortterm","Corto plazo · Qualified Sponsor"],["statistical","Estadística · Qualified"]];
-const DEFAULT_CATS=[{match:"negoti|negocia",category:"commit"},{match:"proposi|propuesta",category:"bestcase"},{match:"sponsor",category:"shortterm"},{match:"qualified",category:"statistical"}];
+const CATS=[["commit","Commit · >90%"],["bestcase","Best Case · 50-85%"],["pipeline","Pipeline · 20-50%"],["initial","Initial · <20%"]];
+const DEFAULT_CATS=[{match:"negoci|negocia",category:"commit"},{match:"propuesta|proposi",category:"bestcase"},{match:"sponsor",category:"bestcase"},{match:"calific|qualified",category:"pipeline"},{match:"nuevo|new",category:"initial"}];
 const catEl=document.getElementById("catRules");
 function catRow(r){const d=document.createElement("div");d.className="rule-row";
   d.innerHTML=`<input type="text" data-cmatch placeholder="negoti|negocia" value="${r.match}">
