@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "lead": {
+    "revenue": "expected_revenue",
+    "mrr": "recurring_revenue_monthly",
+    "mrrFallback": "recurring_revenue",
+    "probability": "probability",
+    "stage": "stage_id",
+    "active": "active",
+    "dwellDate": "date_last_stage_update",
+    "createDate": "create_date",
+    "closeDate": "date_closed",
+    "cycleDays": "day_close",
+    "deadline": "date_deadline",
+    "owner": "user_id",
+    "tags": "tag_ids",
+    "partnerAssigned": "partner_assigned_id",
+    "partnerCustomer": "partner_id",
+    "typeFilter": "opportunity"
+  },
+  "stage": { "won": "is_won", "sequence": "sequence", "name": "name" },
+  "quote": { "value": "amount_untaxed", "link": "opportunity_id", "extra": "state" },
+  "rules": {
+    "forecastTags": ["Commit", "Best Case", "Pipeline", "Initial"],
+    "categoryByStage": [
+      { "match": "negoci|negocia", "category": "commit" },
+      { "match": "propuesta|proposi", "category": "bestcase" },
+      { "match": "sponsor", "category": "bestcase" },
+      { "match": "calific|qualified", "category": "pipeline" },
+      { "match": "nuevo|new", "category": "initial" }
+    ],
+    "horizonMonths": 6,
+    "yearsByStage": [
+      { "match": "negoti|negocia", "years": 3 },
+      { "match": "proposi|propuesta", "years": 2 }
+    ],
+    "defaultYears": 1
+  }
+}
