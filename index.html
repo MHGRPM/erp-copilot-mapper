@@ -164,6 +164,7 @@
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
   .mk-line{background:#f4f1f8;border-radius:8px;padding:6px 9px;margin-bottom:5px;color:#4a4752}
   .mk-line b{color:var(--pu)}
+  /* impeccable-disable side-tab — .mk-sugg replica la tarjeta de sugerencia REAL de la extensión (mockup del producto, no adorno) */
   .mk-sugg{border:1px solid #e6dcec;border-left:3px solid var(--pu);border-radius:10px;padding:9px 11px;margin-bottom:7px;background:#fff}
   .mk-sugg .t{font-weight:700;color:var(--pu);font-size:12.5px;margin-bottom:3px}
   .mk-sugg.teal{border-left-color:var(--teal)} .mk-sugg.teal .t{color:var(--teal)}
@@ -253,7 +254,7 @@
   .cm-foot{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
   .cm-item.flash{box-shadow:0 0 0 2px #00e0c6;border-color:#00e0c6}
   .cm-item .go{color:var(--teal);font-weight:600;text-decoration:none;cursor:pointer}
-  /* Resaltado neón del texto comentado (persistente) */
+  /* Resaltado neón del texto comentado (persistente) · impeccable-disable dark-glow — efecto neón solicitado explícitamente por el usuario */
   mark.cm-hl{background:rgba(0,224,198,.16);border-bottom:2px solid #00e0c6;box-shadow:0 0 6px rgba(0,224,198,.6);
     border-radius:3px;padding:0 1px;color:inherit;cursor:pointer}
   mark.cm-hl.flash{background:rgba(0,224,198,.4);box-shadow:0 0 0 3px #00e0c6,0 0 18px #00e0c6}
