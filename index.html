@@ -22,6 +22,11 @@
   .topbar{display:flex;align-items:center;height:60px;background:var(--bg);border-bottom:1px solid var(--line);padding:0 34px;position:sticky;top:0;z-index:20}
   .topbar span{font-family:var(--hand);font-size:26px;color:var(--pu);font-weight:700;line-height:1}
   @media(max-width:900px){.topbar{padding:0 16px 0 56px}}
+  /* Sub-navegación sticky por secciones (salta sin scroll) */
+  .subnav{position:sticky;top:60px;z-index:19;background:#fff;border-bottom:1px solid var(--line);padding:7px 34px;display:flex;gap:6px;overflow-x:auto;white-space:nowrap}
+  .subnav a{font-size:12px;color:var(--pu);background:#f5f0f8;border:1px solid var(--line);border-radius:16px;padding:4px 11px;text-decoration:none;flex:0 0 auto}
+  .subnav a:hover{background:var(--pu);color:#fff}
+  @media(max-width:900px){.subnav{padding:7px 12px}}
   /* ---------- Layout general: nav lateral + contenido ---------- */
   .shell{display:grid;grid-template-columns:var(--nav) 1fr;min-height:100vh}
   nav.side{background:#17141d;color:#d9d3e4;position:sticky;top:0;height:100vh;overflow:auto;padding:0 0 18px}
@@ -205,6 +210,31 @@
   .view .vd{font-size:12px;color:var(--mut);margin-top:8px}
   .badge-live{font-size:10px;background:#e9f5f5;color:var(--teal);border:1px solid #cfe7e7;border-radius:16px;padding:1px 8px;margin-left:6px}
   .badge-idea{font-size:10px;background:#fff3e6;color:#b25a00;border:1px solid #f0d9b8;border-radius:16px;padding:1px 8px;margin-left:6px}
+  .badge-choice{font-size:10px;background:#e6f4ea;color:#1f7a44;border:1px solid #bfe3cc;border-radius:16px;padding:1px 8px;margin-left:6px}
+  /* Previews extra para ideas de visualización */
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:860px){.gallery{grid-template-columns:1fr}}
+  .fl{display:flex;align-items:center;gap:4px;justify-content:center;flex-wrap:wrap}
+  .fl .n{background:#714B67;color:#fff;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:600}
+  .fl .a{color:var(--pu2);font-weight:700}
+  .ringrow{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap}
+  .ring{width:46px;height:46px;border-radius:50%;background:conic-gradient(#714B67 0 var(--pct,100%),#ece6f1 0);display:grid;place-items:center}
+  .ring .ri{width:32px;height:32px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--pu)}
+  .gauge{height:16px;background:#ece6f1;border-radius:10px;position:relative;overflow:visible}
+  .gauge>i{display:block;height:100%;background:linear-gradient(90deg,#875A7B,#017E84);border-radius:10px}
+  .gauge>.tgt{position:absolute;top:-4px;bottom:-4px;width:2px;background:#e0413f}
+  .stack{display:flex;height:24px;border-radius:6px;overflow:hidden;font-size:9px;color:#fff;font-weight:600}
+  .stack>span{display:flex;align-items:center;justify-content:center}
+  .tl{display:flex;align-items:flex-end;gap:6px;height:74px}
+  .tl .m{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;color:var(--mut)}
+  .tl .m i{width:100%;background:linear-gradient(180deg,#875A7B,#714B67);border-radius:4px 4px 0 0}
+  .spark{display:flex;align-items:flex-end;gap:3px;height:38px;justify-content:center}
+  .spark i{width:7px;background:#875A7B;border-radius:2px 2px 0 0}
+  .semrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .sem{display:flex;align-items:center;gap:5px;font-size:11px;color:#4a4752}
+  .sem b{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .bub{background:#f4f1f8;border-radius:14px;padding:6px 10px;font-size:11px;color:#4a4752;margin-bottom:5px;display:inline-block}
+  .srch{border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:11px;color:var(--mut);background:#fff}
 
   /* panel JSON */
   .panel{background:#14121a;border-radius:12px;overflow:hidden;border:1px solid #2a2635;margin-top:6px}
@@ -282,6 +312,7 @@
 
   <main>
   <div class="topbar"><span>ERP Copilot</span></div>
+  <div class="subnav" id="subnav"></div>
   <!-- ============ INICIO ============ -->
   <section class="tab active" data-tabid="inicio">
     <div class="head"><div class="eyebrow">Documento de trabajo · revisión con expertos</div>
@@ -340,20 +371,12 @@
           <div class="device">
             <div class="mk-head"><span class="l"><span class="dot"></span> ERP Copilot</span><span class="r">CRM · Ajustes</span></div>
             <div class="mk-sess"><span class="g"></span> Sesión Odoo · conectado (nextdoo.cloud)</div>
-            <div class="mk-chips">
-              <span class="mk-chip">Estándar</span><span class="mk-chip on">Calificación</span>
-              <span class="mk-chip">Venta</span><span class="mk-chip">Demo</span><span class="mk-chip">Estratégica</span>
+            <div class="mk-chips" id="live-chips">
+              <span class="mk-chip" data-mode="estandar">Estándar</span><span class="mk-chip" data-mode="calificacion">Calificación</span>
+              <span class="mk-chip" data-mode="venta">Venta</span><span class="mk-chip" data-mode="demo">Demo</span><span class="mk-chip" data-mode="estrategica">Estratégica</span>
             </div>
-            <div class="mk-sec"><div class="mk-lbl"><span class="mk-live"></span> En vivo</div>
-              <div class="mk-line">…ahora mismo llevamos la <b>facturación</b> con varias hojas de cálculo…</div>
-              <div class="mk-line">…y el <b>almacén</b> no está conectado con ventas…</div>
-            </div>
-            <div class="mk-sec"><div class="mk-lbl">Sugerencias</div>
-              <div class="mk-sugg"><div class="t">Pregunta de calificación</div>¿Cuántas personas tocan hoy ese
-                proceso y cuánto tiempo les lleva a la semana?</div>
-              <div class="mk-sugg teal"><div class="t">Punto de valor</div>Con almacén y ventas en el mismo Odoo,
-                el stock se descuenta solo al facturar.</div>
-            </div>
+            <div class="mk-sec"><div class="mk-lbl"><span class="mk-live"></span> En vivo</div><div id="live-feed"></div></div>
+            <div class="mk-sec"><div class="mk-lbl">Sugerencias</div><div id="live-sugg"></div></div>
           </div>
         </div>
       </div>
@@ -518,18 +541,10 @@
         <i>child_of</i> — incluyendo perdidas/archivadas, y filtrando <code>type = opportunity</code>. Con esas
         oportunidades y las etapas (<code>crm.stage</code>) monta el embudo.</div>
         <div class="sample">
-          <div class="sample-h">Datos de ejemplo · <b>Talleres Ejemplo SL</b> — oportunidad «Implantación Odoo». Haz clic en un dato (o en un campo de la izquierda) para ver qué alimenta y validarlo.</div>
-          <div class="sample-chips">
-            <span class="schip" data-field="lead.stage">Etapa: <b>Negociación</b></span>
-            <span class="schip" data-field="lead.revenue">Ingreso esperado: <b>4.800 €</b></span>
-            <span class="schip" data-field="lead.mrr">MRR: <b>320 €/mes</b></span>
-            <span class="schip" data-field="lead.probability">Probabilidad: <b>65 %</b></span>
-            <span class="schip" data-field="lead.tags">Etiqueta: <b>Best Case</b></span>
-            <span class="schip" data-field="lead.createDate">Creada: <b>12/03/2026</b></span>
-            <span class="schip" data-field="lead.dwellDate">Último cambio: <b>hace 18 d</b></span>
-            <span class="schip" data-field="lead.cycleDays">Ciclo: <b>92 d</b></span>
-            <span class="schip" data-field="lead.owner">Comercial: <b>Ana G.</b></span>
-          </div>
+          <div class="sample-h">Datos de ejemplo del partner:
+            <select id="crm-partner" style="font-family:var(--body);font-size:12.5px;padding:4px 8px;border:1px solid var(--line);border-radius:8px;margin:0 6px;cursor:pointer"></select>
+            <span id="crm-oppname"></span>. Haz clic en un dato (o en un campo de la izquierda) para validarlo.</div>
+          <div class="sample-chips" id="crm-sample"></div>
         </div>
       </div>
 
@@ -553,28 +568,9 @@
           <div class="zone" style="padding:12px">
             <span class="zone-lbl content">Contenido · embudo</span>
             <div class="device" id="crm-mockup" style="width:100%;box-shadow:none">
-              <div class="mk-sec"><div class="mk-lbl">Embudo del partner (ejemplo)</div>
-                <div class="mk-kpis">
-                  <div class="mk-kpi" data-kpi="conv"><b>43 %</b><span>conversión</span></div>
-                  <div class="mk-kpi" data-kpi="mrr"><b>320 €</b><span>MRR/deal</span></div>
-                  <div class="mk-kpi" data-kpi="mrr"><b>1.240 €</b><span>MRR pipeline</span></div>
-                  <div class="mk-kpi" data-kpi="cycle"><b>92 d</b><span>ciclo venta</span></div>
-                  <div class="mk-kpi" data-kpi="mrr"><b>960 €</b><span>MRR ganado</span></div>
-                  <div class="mk-kpi" data-kpi="conv"><b>3/7</b><span>ganadas/cerr.</span></div>
-                </div>
-                <div style="margin-top:10px">
-                  <div class="mk-stage" data-kpi="funnel"><div class="sh"><span>Nuevo</span><span>12 · 4.800 €</span></div>
-                    <div class="mk-bar" style="width:100%;background:linear-gradient(90deg,#875A7B,#714B67)">12</div>
-                    <div class="mk-drop">▼ −25 % a Cualificado &nbsp; <span class="mk-dwell" data-kpi="dwell">⏱ 18 d parado</span></div></div>
-                  <div class="mk-stage" data-kpi="funnel"><div class="sh"><span>Cualificado</span><span>9 · 3.600 €</span></div>
-                    <div class="mk-bar" style="width:75%;background:linear-gradient(90deg,#7B5070,#654260)">9</div>
-                    <div class="mk-drop">▼ −33 % a Propuesta &nbsp; <span class="mk-dwell" data-kpi="dwell">⏱ 27 d parado</span></div></div>
-                  <div class="mk-stage" data-kpi="funnel"><div class="sh"><span>Propuesta</span><span>6 · 2.400 €</span></div>
-                    <div class="mk-bar" style="width:50%;background:linear-gradient(90deg,#654260,#5B3D54)">6</div>
-                    <div class="mk-drop">▼ −33 % a Negociación</div></div>
-                  <div class="mk-stage" data-kpi="funnel"><div class="sh"><span>Ganado</span><span>3 ganadas · MRR 960 €</span></div>
-                    <div class="mk-bar" style="width:26%;background:linear-gradient(90deg,#017E84,#015C61)">3</div></div>
-                </div>
+              <div class="mk-sec"><div class="mk-lbl" id="crm-mocklbl">Embudo del partner</div>
+                <div class="mk-kpis" id="crm-kpis"></div>
+                <div id="crm-stages" style="margin-top:10px"></div>
                 <div class="cap">▼ fuga entre etapas · ⏱ tiempo parado · el resaltado marca el campo seleccionado</div>
               </div>
             </div>
@@ -715,10 +711,9 @@
       <p>Distintas formas de pintar el embudo y el forecast, más cómodas de leer. Elige una de cada; la elección se
       guarda en el mapa (<code>rules.funnelView</code> / <code>rules.forecastView</code>) para definirla desde aquí.</p></div>
     <div class="pad">
-      <div class="warnbox">La que está marcada <span class="badge-live">en uso</span> es la que pinta hoy la extensión.
-        Las marcadas <span class="badge-idea">idea</span> son propuestas: se pueden cablear si os convencen.</div>
+      <div class="warnbox">Habéis elegido las <b>dos primeras</b> de cada bloque (<span class="badge-live">en uso</span> = lo que pinta hoy la extensión · <span class="badge-choice">elegido</span> = vuestra segunda opción). El resto son <span class="badge-idea">idea</span>. La elección se guarda en el mapa (<code>rules.funnelView</code> / <code>rules.forecastView</code>).</div>
 
-      <h2>Embudo</h2>
+      <h2>Embudo · 6 formas</h2>
       <div class="views" id="funnelViews">
         <label class="view sel" data-view="barras">
           <div class="vh"><input type="radio" name="funnelView" value="barras" checked> Barras horizontales <span class="badge-live">en uso</span></div>
@@ -727,17 +722,17 @@
             <div class="mk-bar" style="width:72%;background:#7B5070;margin-bottom:4px">9</div>
             <div class="mk-bar" style="width:50%;background:#654260;margin-bottom:4px">6</div>
             <div class="mk-bar" style="width:26%;background:#017E84">3</div></div></div>
-          <div class="vd">Cada etapa una barra, con % de fuga y tiempo parado debajo. Compacta y muy legible en móvil.</div>
+          <div class="vd">Cada etapa una barra, con % de fuga y tiempo parado. Compacta y muy legible en móvil.</div>
         </label>
         <label class="view" data-view="embudo">
-          <div class="vh"><input type="radio" name="funnelView" value="embudo"> Embudo clásico <span class="badge-idea">idea</span></div>
+          <div class="vh"><input type="radio" name="funnelView" value="embudo"> Embudo clásico <span class="badge-choice">elegido</span></div>
           <div class="vp"><div class="sil">
             <div class="s" style="width:100%;background:#714B67">Nuevo 12</div>
             <div class="s" style="width:78%;background:#7B5070">Cualif. 9</div>
             <div class="s" style="width:54%;background:#654260">Prop. 6</div>
             <div class="s" style="width:34%;background:#5B3D54">Negoc. 4</div>
             <div class="s" style="width:22%;background:#017E84">Ganado 3</div></div></div>
-          <div class="vd">Silueta que estrecha de arriba abajo. Muy intuitiva de un vistazo; la caída se «ve» sola.</div>
+          <div class="vd">Silueta que estrecha de arriba abajo. La caída se «ve» sola de un vistazo.</div>
         </label>
         <label class="view" data-view="tabla">
           <div class="vh"><input type="radio" name="funnelView" value="tabla"> Tabla de conversión <span class="badge-idea">idea</span></div>
@@ -746,38 +741,122 @@
             <tr><td>Nuevo</td><td>12</td><td>25 %</td><td>18</td></tr>
             <tr><td>Cualif.</td><td>9</td><td>33 %</td><td>27</td></tr>
             <tr><td>Prop.</td><td>6</td><td>33 %</td><td>12</td></tr></table></div>
-          <div class="vd">Todo en números: llegan, fuga y días parados por etapa. Ideal para el que quiere el dato exacto.</div>
+          <div class="vd">Todo en números por etapa. Para quien quiere el dato exacto.</div>
+        </label>
+        <label class="view" data-view="flujo">
+          <div class="vh"><input type="radio" name="funnelView" value="flujo"> Flujo por pasos <span class="badge-idea">idea</span></div>
+          <div class="vp"><div class="fl">
+            <span class="n">Nuevo 12</span><span class="a">▸</span><span class="n">Cualif. 9</span><span class="a">▸</span>
+            <span class="n">Prop. 6</span><span class="a">▸</span><span class="n">Gan. 3</span></div></div>
+          <div class="vd">Horizontal, como un recorrido. Bueno para explicar el proceso en una demo.</div>
+        </label>
+        <label class="view" data-view="anillos">
+          <div class="vh"><input type="radio" name="funnelView" value="anillos"> Anillos por etapa <span class="badge-idea">idea</span></div>
+          <div class="vp"><div class="ringrow">
+            <div class="ring" style="--pct:100%"><div class="ri">12</div></div>
+            <div class="ring" style="--pct:75%"><div class="ri">9</div></div>
+            <div class="ring" style="--pct:50%"><div class="ri">6</div></div>
+            <div class="ring" style="--pct:26%"><div class="ri">3</div></div></div></div>
+          <div class="vd">Un donut por etapa; el relleno marca cuántas llegan. Visual y moderno.</div>
+        </label>
+        <label class="view" data-view="termometro">
+          <div class="vh"><input type="radio" name="funnelView" value="termometro"> Termómetro de conversión <span class="badge-idea">idea</span></div>
+          <div class="vp"><div style="width:100%">
+            <div class="gauge"><i style="width:43%"></i></div>
+            <div style="text-align:center;font-size:12px;margin-top:8px;color:var(--pu);font-weight:700">43 % conversión</div></div></div>
+          <div class="vd">Un solo número grande: la conversión global. Directo para dirección.</div>
         </label>
       </div>
 
-      <h2>Forecast</h2>
+      <h2>Forecast · 6 formas</h2>
       <div class="views" id="forecastViews">
         <label class="view sel" data-view="tarjetas">
-          <div class="vh"><input type="radio" name="forecastView" value="tarjetas" checked> Tarjetas por trimestre <span class="badge-live">en uso</span></div>
+          <div class="vh"><input type="radio" name="forecastView" value="tarjetas" checked> Tarjetas por periodo <span class="badge-live">en uso</span></div>
           <div class="vp"><div style="width:100%">
             <div class="mk-kpis" style="grid-template-columns:1fr 1fr">
-              <div class="mk-kpi"><b>8.400 €</b><span>T3 · 5</span></div>
-              <div class="mk-kpi"><b>12.100 €</b><span>T4 · 7</span></div></div></div></div>
-          <div class="vd">Trimestre actual y siguiente como tarjetas grandes, con cohortes y objetivo debajo.</div>
+              <div class="mk-kpi"><b>8.400 €</b><span>este mes · 5</span></div>
+              <div class="mk-kpi"><b>12.100 €</b><span>mes +1 · 7</span></div></div></div></div>
+          <div class="vd">Periodo actual y siguiente como tarjetas grandes.</div>
         </label>
         <label class="view" data-view="cascada">
-          <div class="vh"><input type="radio" name="forecastView" value="cascada"> Cascada (waterfall) <span class="badge-idea">idea</span></div>
+          <div class="vh"><input type="radio" name="forecastView" value="cascada"> Cascada (waterfall) <span class="badge-choice">elegido</span></div>
           <div class="vp"><div class="wf" style="width:100%">
             <div class="c"><div class="b" style="height:100%;background:#875A7B"></div>bruto</div>
             <div class="c"><div class="b" style="height:62%;background:#714B67"></div>×prob</div>
-            <div class="c"><div class="b" style="height:40%;background:#017E84"></div>T3</div>
-            <div class="c"><div class="b" style="height:55%;background:#015C61"></div>T4</div></div></div>
-          <div class="vd">Del pipeline bruto al esperado: se ve cuánto «pesa» la probabilidad y cómo reparte por trimestre.</div>
+            <div class="c"><div class="b" style="height:40%;background:#017E84"></div>mes</div>
+            <div class="c"><div class="b" style="height:55%;background:#015C61"></div>+1</div></div></div>
+          <div class="vd">Del pipeline bruto al esperado: se ve el peso de la probabilidad.</div>
         </label>
         <label class="view" data-view="cohortes">
           <div class="vh"><input type="radio" name="forecastView" value="cohortes"> Cohortes <span class="badge-idea">idea</span></div>
           <div class="vp"><table class="mk-tbl">
-            <tr><th>Trim.</th><th>Conv.</th><th>Ticket</th><th>Ciclo</th></tr>
-            <tr><td>T1</td><td>50 %</td><td>3.100</td><td>88</td></tr>
-            <tr><td>T2</td><td>36 %</td><td>2.700</td><td>95</td></tr>
-            <tr><td>T3</td><td>—</td><td>—</td><td>abto</td></tr></table></div>
-          <div class="vd">Cómo evoluciona cada camada de oportunidades. Muestra si la venta mejora o empeora con el tiempo.</div>
+            <tr><th>Mes</th><th>Conv.</th><th>Ticket</th><th>Ciclo</th></tr>
+            <tr><td>Ene</td><td>50 %</td><td>3.100</td><td>88</td></tr>
+            <tr><td>Feb</td><td>36 %</td><td>2.700</td><td>95</td></tr>
+            <tr><td>Mar</td><td>—</td><td>—</td><td>abto</td></tr></table></div>
+          <div class="vd">Cómo evoluciona cada camada. Muestra si la venta mejora con el tiempo.</div>
         </label>
+        <label class="view" data-view="timeline">
+          <div class="vh"><input type="radio" name="forecastView" value="timeline"> Línea temporal (meses) <span class="badge-idea">idea</span></div>
+          <div class="vp"><div class="tl">
+            <div class="m"><i style="height:40%"></i>Jul</div><div class="m"><i style="height:70%"></i>Ago</div>
+            <div class="m"><i style="height:55%"></i>Sep</div><div class="m"><i style="height:85%"></i>Oct</div>
+            <div class="m"><i style="height:45%"></i>Nov</div><div class="m"><i style="height:60%"></i>Dic</div></div></div>
+          <div class="vd">Los 6 meses en una línea. Se ve el reparto y los picos de cierre.</div>
+        </label>
+        <label class="view" data-view="objetivo">
+          <div class="vh"><input type="radio" name="forecastView" value="objetivo"> Cobertura de objetivo <span class="badge-idea">idea</span></div>
+          <div class="vp"><div style="width:100%">
+            <div class="gauge"><i style="width:81%"></i><span class="tgt" style="left:100%"></span></div>
+            <div style="text-align:center;font-size:12px;margin-top:8px;color:var(--pu);font-weight:700">81 % del objetivo · faltan ~2 opps</div></div></div>
+          <div class="vd">Cuánto del objetivo del mes está cubierto y qué falta. Ideal para seguimiento.</div>
+        </label>
+        <label class="view" data-view="categorias">
+          <div class="vh"><input type="radio" name="forecastView" value="categorias"> Barras por etiqueta <span class="badge-idea">idea</span></div>
+          <div class="vp"><div style="width:100%">
+            <div class="stack"><span style="width:30%;background:#1f7a44">Commit</span><span style="width:35%;background:#017E84">Best</span><span style="width:25%;background:#b25a00">Pipe</span><span style="width:10%;background:#8b8397">Init</span></div>
+            <div style="font-size:10px;color:var(--mut);margin-top:6px;text-align:center">Commit 3.200 · Best Case 3.800 · Pipeline 2.400 · Initial —</div></div></div>
+          <div class="vd">Reparto por etiqueta del Comité de los Cuatro. Coherente con el modelo.</div>
+        </label>
+      </div>
+
+      <h2>Otras áreas · ideas</h2>
+      <p class="treehint">Alternativas para el resto de bloques. De momento son propuestas visuales; se cablean si os gustan.</p>
+      <h3 style="margin-top:6px">KPIs del embudo</h3>
+      <div class="gallery">
+        <div class="view"><div class="vh">Tarjetas grandes <span class="badge-live">en uso</span></div>
+          <div class="vp"><div class="mk-kpis" style="grid-template-columns:1fr 1fr;width:100%"><div class="mk-kpi"><b>43 %</b><span>conv.</span></div><div class="mk-kpi"><b>320 €</b><span>MRR</span></div></div></div>
+          <div class="vd">Números grandes, uno por tarjeta.</div></div>
+        <div class="view"><div class="vh">Semáforo <span class="badge-idea">idea</span></div>
+          <div class="vp"><div class="semrow"><div class="sem"><b style="background:#20b36b"></b> Conv. 43 %</div><div class="sem"><b style="background:#e08a00"></b> Ciclo 92 d</div><div class="sem"><b style="background:#20b36b"></b> MRR ↑</div></div></div>
+          <div class="vd">Verde/ámbar/rojo según objetivo. De un vistazo.</div></div>
+        <div class="view"><div class="vh">Sparkline <span class="badge-idea">idea</span></div>
+          <div class="vp"><div class="spark"><i style="height:40%"></i><i style="height:55%"></i><i style="height:45%"></i><i style="height:70%"></i><i style="height:85%"></i></div></div>
+          <div class="vd">Mini-tendencia del KPI en el tiempo.</div></div>
+      </div>
+      <h3>Reunión en vivo</h3>
+      <div class="gallery">
+        <div class="view"><div class="vh">Tarjetas apiladas <span class="badge-live">en uso</span></div>
+          <div class="vp"><div style="width:100%"><div class="mk-sugg" style="margin:0 0 5px"><div class="t">Pregunta</div>…</div><div class="mk-sugg teal" style="margin:0"><div class="t">Valor</div>…</div></div></div>
+          <div class="vd">La última arriba; las previas se pliegan.</div></div>
+        <div class="view"><div class="vh">Hilo de temas <span class="badge-idea">idea</span></div>
+          <div class="vp"><div style="width:100%"><span class="bub">facturación</span> <span class="bub">almacén</span> <span class="bub">ventas</span></div></div>
+          <div class="vd">Los temas detectados en orden, como hilo.</div></div>
+        <div class="view"><div class="vh">Chat / burbujas <span class="badge-idea">idea</span></div>
+          <div class="vp"><div style="width:100%"><div class="bub">…llevamos la facturación con hojas…</div><br><div class="bub" style="background:#eef6f6;color:var(--teal)">¿Cuántas personas la tocan?</div></div></div>
+          <div class="vd">Estilo conversación: transcripción + sugerencia.</div></div>
+      </div>
+      <h3>Conocimiento</h3>
+      <div class="gallery">
+        <div class="view"><div class="vh">Árbol <span class="badge-live">en uso</span></div>
+          <div class="vp"><div style="width:100%;font-size:11px;color:#4a4752">▸ Cerebro base<br>&nbsp;&nbsp;▸ Odoo · Módulos (8)<br>&nbsp;&nbsp;▸ Ventas · Metodologías</div></div>
+          <div class="vd">Desplegable por fuente y tema.</div></div>
+        <div class="view"><div class="vh">Píldoras <span class="badge-idea">idea</span></div>
+          <div class="vp"><div style="width:100%"><span class="mk-chip">CRM</span> <span class="mk-chip">Inventario</span> <span class="mk-chip">Contabilidad</span></div></div>
+          <div class="vd">Chips por temática, acceso de un toque.</div></div>
+        <div class="view"><div class="vh">Buscador <span class="badge-idea">idea</span></div>
+          <div class="vp"><div style="width:100%"><div class="srch">Buscar en el conocimiento…</div></div></div>
+          <div class="vd">Caja de búsqueda que filtra todo el cerebro.</div></div>
       </div>
       <div class="status" id="viewStatus"></div>
     </div>
@@ -944,28 +1023,44 @@ document.querySelectorAll("[data-card]").forEach(card=>{
 });
 function mark(card,inp,def){card.classList.toggle("changed",inp.value.trim()!==def);}
 
-// ---- CRM: validación interactiva (campo ↔ dato de ejemplo ↔ embudo) ----
-const SAMPLE={
-  "lead.revenue":{v:"4.800 €",kpi:"funnel",feeds:"ticket medio · pipeline · forecast ponderado"},
-  "lead.mrr":{v:"320 €/mes",kpi:"mrr",feeds:"MRR/deal · MRR pipeline · MRR ganado"},
-  "lead.mrrFallback":{v:"320 €/mes",kpi:"mrr",feeds:"MRR (respaldo si no hay mensual)"},
-  "lead.probability":{v:"65 %",kpi:"conv",feeds:"forecast ponderado · ganado de respaldo"},
-  "lead.stage":{v:"Negociación",kpi:"funnel",feeds:"fase del embudo · ganado/perdido"},
-  "lead.active":{v:"activa",kpi:"conv",feeds:"abiertas vs perdidas"},
-  "lead.dwellDate":{v:"hace 18 días",kpi:"dwell",feeds:"tiempo parado en la etapa"},
-  "lead.createDate":{v:"12/03/2026",kpi:"cycle",feeds:"ciclo de venta · cohortes"},
-  "lead.closeDate":{v:"— (abierta)",kpi:"cycle",feeds:"ciclo de venta"},
-  "lead.cycleDays":{v:"92 días",kpi:"cycle",feeds:"ciclo de venta (preferente)"},
-  "lead.deadline":{v:"31/08/2026",kpi:null,feeds:"mes/trimestre del forecast"},
-  "lead.owner":{v:"Ana G.",kpi:"conv",feeds:"estadísticas por PM"},
-  "lead.tags":{v:"Best Case",kpi:null,feeds:"categoría de forecast (etiqueta)"},
-  "lead.partnerAssigned":{v:"Talleres Ejemplo SL",kpi:"funnel",feeds:"carga del pipeline de canal"},
-  "lead.partnerCustomer":{v:"Talleres Ejemplo SL",kpi:"funnel",feeds:"carga como cliente"},
-  "lead.typeFilter":{v:"opportunity",kpi:null,feeds:"filtra oportunidades (no leads)"},
-  "stage.won":{v:"Ganado = sí",kpi:"conv",feeds:"conversión · MRR ganado"},
-  "stage.sequence":{v:"4",kpi:"funnel",feeds:"orden · fuga entre fases"},
-  "stage.name":{v:"Negociación",kpi:"funnel",feeds:"etiqueta de etapa"}
+// ---- Mockups dinámicos: partner (CRM) + validación campo↔dato↔embudo ----
+const PARTNERS={
+  talleres:{name:"Talleres Ejemplo SL",opp:"Implantación Odoo",
+    kpis:[["43 %","conversión","conv"],["320 €","MRR/deal","mrr"],["1.240 €","MRR pipeline","mrr"],["92 d","ciclo venta","cycle"],["960 €","MRR ganado","mrr"],["3/7","ganadas/cerr.","conv"]],
+    stages:[["Nuevo","12 · 4.800 €",100,"−25 % a Cualificado","18 d"],["Cualificado","9 · 3.600 €",75,"−33 % a Propuesta","27 d"],["Propuesta","6 · 2.400 €",50,"−33 % a Negociación",""],["Ganado","3 ganadas · MRR 960 €",26,"",""]],
+    f:{stage:"Negociación",revenue:"4.800 €",mrr:"320 €/mes",probability:"65 %",tags:"Best Case",createDate:"12/03/2026",dwellDate:"hace 18 d",cycleDays:"92 d",owner:"Ana G.",deadline:"31/08/2026"}},
+  moda:{name:"Moda Global SA",opp:"ERP retail multi-tienda",
+    kpis:[["55 %","conversión","conv"],["540 €","MRR/deal","mrr"],["2.700 €","MRR pipeline","mrr"],["120 d","ciclo venta","cycle"],["1.620 €","MRR ganado","mrr"],["6/11","ganadas/cerr.","conv"]],
+    stages:[["Nuevo","20 · 12.000 €",100,"−30 % a Cualificado","22 d"],["Cualificado","14 · 9.000 €",70,"−43 % a Propuesta","30 d"],["Propuesta","8 · 6.400 €",40,"−25 % a Negociación",""],["Ganado","6 ganadas · MRR 1.620 €",30,"",""]],
+    f:{stage:"Propuesta",revenue:"12.000 €",mrr:"540 €/mes",probability:"50 %",tags:"Pipeline",createDate:"02/02/2026",dwellDate:"hace 34 d",cycleDays:"120 d",owner:"Luis P.",deadline:"15/09/2026"}},
+  hostel:{name:"Hostelería Norte SL",opp:"TPV + inventario",
+    kpis:[["38 %","conversión","conv"],["210 €","MRR/deal","mrr"],["840 €","MRR pipeline","mrr"],["70 d","ciclo venta","cycle"],["630 €","MRR ganado","mrr"],["3/8","ganadas/cerr.","conv"]],
+    stages:[["Nuevo","15 · 3.000 €",100,"−40 % a Cualificado","12 d"],["Cualificado","9 · 2.200 €",60,"−33 % a Propuesta","19 d"],["Propuesta","6 · 1.500 €",40,"−50 % a Negociación",""],["Ganado","3 ganadas · MRR 630 €",20,"",""]],
+    f:{stage:"Calificado",revenue:"3.000 €",mrr:"210 €/mes",probability:"35 %",tags:"Pipeline",createDate:"20/04/2026",dwellDate:"hace 9 d",cycleDays:"70 d",owner:"Marta R.",deadline:"30/07/2026"}}
 };
+let curPartner="talleres";
+const SAMPLE={
+  "lead.revenue":{kpi:"funnel",feeds:"ticket medio · pipeline · forecast ponderado",key:"revenue"},
+  "lead.mrr":{kpi:"mrr",feeds:"MRR/deal · MRR pipeline · MRR ganado",key:"mrr"},
+  "lead.mrrFallback":{kpi:"mrr",feeds:"MRR (respaldo si no hay mensual)",key:"mrr"},
+  "lead.probability":{kpi:"conv",feeds:"forecast ponderado · ganado de respaldo",key:"probability"},
+  "lead.stage":{kpi:"funnel",feeds:"fase del embudo · ganado/perdido",key:"stage"},
+  "lead.active":{kpi:"conv",feeds:"abiertas vs perdidas",v:"activa"},
+  "lead.dwellDate":{kpi:"dwell",feeds:"tiempo parado en la etapa",key:"dwellDate"},
+  "lead.createDate":{kpi:"cycle",feeds:"ciclo de venta · cohortes",key:"createDate"},
+  "lead.closeDate":{kpi:"cycle",feeds:"ciclo de venta",v:"— (abierta)"},
+  "lead.cycleDays":{kpi:"cycle",feeds:"ciclo de venta (preferente)",key:"cycleDays"},
+  "lead.deadline":{kpi:null,feeds:"mes/trimestre del forecast",key:"deadline"},
+  "lead.owner":{kpi:"conv",feeds:"estadísticas por PM",key:"owner"},
+  "lead.tags":{kpi:null,feeds:"categoría de forecast (etiqueta)",key:"tags"},
+  "lead.partnerAssigned":{kpi:"funnel",feeds:"carga del pipeline de canal",key:"__name"},
+  "lead.partnerCustomer":{kpi:"funnel",feeds:"carga como cliente",key:"__name"},
+  "lead.typeFilter":{kpi:null,feeds:"filtra oportunidades (no leads)",v:"opportunity"},
+  "stage.won":{kpi:"conv",feeds:"conversión · MRR ganado",v:"Ganado = sí"},
+  "stage.sequence":{kpi:"funnel",feeds:"orden · fuga entre fases",v:"4"},
+  "stage.name":{kpi:"funnel",feeds:"etiqueta de etapa",key:"stage"}
+};
+function sampleValue(p){const s=SAMPLE[p]||{};if(s.key==="__name")return PARTNERS[curPartner].name;if(s.key)return PARTNERS[curPartner].f[s.key]||"—";return s.v||"—";}
 let valid={}; try{valid=JSON.parse(localStorage.getItem("erpco_valid")||"{}");}catch(e){}
 let selField=null;
 const crmDetail=document.getElementById("crmDetail"),crmMock=document.getElementById("crm-mockup");
@@ -980,7 +1075,7 @@ function selectField(p){
   const s=SAMPLE[p]||{},st=valid[p];
   crmDetail.innerHTML=`<div class="d-h">${labelOf(p)} <span class="path">${p}</span></div>
     <div class="d-row">Campo Odoo mapeado: <b>${fieldSourceOf(p)||"—"}</b></div>
-    <div class="d-row">Dato de ejemplo (Talleres Ejemplo SL): <b class="ex">${s.v||"—"}</b></div>
+    <div class="d-row">Dato de este partner: <b class="ex">${sampleValue(p)}</b></div>
     <div class="d-row">Alimenta en el embudo: <b>${s.feeds||"—"}</b></div>
     <div class="d-val"><span>¿El campo es el correcto para este dato?</span>
       <button class="ok${st==="ok"?" on":""}" data-v="ok">✓ Correcto</button>
@@ -990,6 +1085,25 @@ function selectField(p){
     localStorage.setItem("erpco_valid",JSON.stringify(valid));refreshDots();selectField(p);}));
   highlightKpi(s.kpi);
 }
+const STG_COLORS=["linear-gradient(90deg,#875A7B,#714B67)","linear-gradient(90deg,#7B5070,#654260)","linear-gradient(90deg,#654260,#5B3D54)","linear-gradient(90deg,#017E84,#015C61)"];
+const SAMPLE_CHIPS=[["lead.stage","Etapa","stage"],["lead.revenue","Ingreso esperado","revenue"],["lead.mrr","MRR","mrr"],["lead.probability","Probabilidad","probability"],["lead.tags","Etiqueta","tags"],["lead.createDate","Creada","createDate"],["lead.dwellDate","Último cambio","dwellDate"],["lead.cycleDays","Ciclo","cycleDays"],["lead.owner","Comercial","owner"]];
+function renderPartner(id){
+  curPartner=id; const P=PARTNERS[id];
+  const lbl=document.getElementById("crm-mocklbl"); if(lbl)lbl.textContent="Embudo · "+P.name;
+  const on=document.getElementById("crm-oppname"); if(on)on.textContent="— oportunidad «"+P.opp+"»";
+  const ks=document.getElementById("crm-kpis"); if(ks)ks.innerHTML=P.kpis.map(k=>`<div class="mk-kpi" data-kpi="${k[2]}"><b>${k[0]}</b><span>${k[1]}</span></div>`).join("");
+  const st=document.getElementById("crm-stages");
+  if(st)st.innerHTML=P.stages.map((s,i)=>`<div class="mk-stage" data-kpi="funnel"><div class="sh"><span>${s[0]}</span><span>${s[1]}</span></div>
+    <div class="mk-bar" style="width:${s[2]}%;background:${STG_COLORS[i]}">${(String(s[1]).match(/^\d+/)||[""])[0]}</div>
+    ${(s[3]||s[4])?`<div class="mk-drop">${s[3]?"▼ "+s[3]:""}${s[4]?` &nbsp; <span class="mk-dwell" data-kpi="dwell">⏱ ${s[4]} parado</span>`:""}</div>`:""}</div>`).join("");
+  const sc=document.getElementById("crm-sample");
+  if(sc)sc.innerHTML=SAMPLE_CHIPS.map(c=>`<span class="schip" data-field="${c[0]}">${c[1]}: <b>${P.f[c[2]]}</b></span>`).join("");
+  if(selField)selectField(selField); else highlightKpi(null);
+}
+const psel=document.getElementById("crm-partner");
+if(psel){psel.innerHTML=Object.keys(PARTNERS).map(k=>`<option value="${k}">${PARTNERS[k].name}</option>`).join("");
+  psel.addEventListener("change",()=>renderPartner(psel.value));}
+renderPartner("talleres");
 document.addEventListener("click",e=>{const el=e.target.closest("[data-field]");if(!el)return;if(e.target.closest("select,input,option,button,a,textarea"))return;selectField(el.dataset.field);});
 document.querySelectorAll("[data-path]").forEach(i=>{
   i.addEventListener("focus",()=>selectField(i.dataset.path));
@@ -997,6 +1111,26 @@ document.querySelectorAll("[data-path]").forEach(i=>{
 });
 document.querySelectorAll("[data-sel]").forEach(s=>s.addEventListener("focus",()=>{const c=s.closest("[data-field]");if(c)selectField(c.dataset.field);}));
 refreshDots();
+// ---- Reunión en vivo: tipos de sesión dinámicos ----
+const SESSIONS={
+  estandar:{feed:["…nos gustaría entender mejor cómo trabajáis hoy…"],sugg:[["Sugerencia general","","Escucha el proceso actual y localiza el mayor dolor antes de proponer nada."]]},
+  calificacion:{feed:["…ahora mismo llevamos la <b>facturación</b> con varias hojas…","…y el <b>almacén</b> no está conectado con ventas…"],
+    sugg:[["Pregunta de calificación","","¿Tenéis etapas de venta definidas o cada comercial lleva su método?"],["Pregunta de calificación","","¿Habéis perdido ventas por rotura de stock este año?"],["Punto de valor","teal","Con almacén y ventas en el mismo Odoo, el stock se descuenta solo al facturar."]]},
+  venta:{feed:["…necesitaríamos que se adaptara a nuestro circuito de aprobación…"],
+    sugg:[["Sonda de personalización","","¿Qué pasos de aprobación tenéis y quién valida cada uno?"],["Punto de valor","teal","Código de barras: recepción, picking y del inventario anual al continuo."]]},
+  demo:{feed:["…enséñanos cómo sería con nuestros productos…"],
+    sugg:[["Momento «guau»","gold","Usa SUS datos (su producto, su cliente tipo). Máximo 3 «guau», uno cada ~10 min."],["Momento «guau»","gold","Al facturar, el stock baja solo y la tesorería se actualiza sola."]]},
+  estrategica:{feed:["…queremos ver cómo encaja Odoo en nuestra estrategia…"],
+    sugg:[["Tema de formación","","Marco de venta MEDDIC: métrica, comprador económico, criterios, dolor, champion."],["Acción estratégica","teal","Propón un segundo encuentro con la persona de finanzas para el cierre mensual."]]}
+};
+function renderSession(mode){
+  const feed=document.getElementById("live-feed"),sg=document.getElementById("live-sugg"),S=SESSIONS[mode];if(!feed||!S)return;
+  feed.innerHTML=S.feed.map(t=>`<div class="mk-line">${t}</div>`).join("");
+  sg.innerHTML=S.sugg.map(s=>`<div class="mk-sugg ${s[1]}"><div class="t">${s[0]}</div>${s[2]}</div>`).join("");
+  document.querySelectorAll("#live-chips .mk-chip").forEach(c=>c.classList.toggle("on",c.dataset.mode===mode));
+}
+document.querySelectorAll("#live-chips .mk-chip").forEach(c=>{c.style.cursor="pointer";c.addEventListener("click",()=>renderSession(c.dataset.mode));});
+renderSession("calificacion");
 
 // Reglas de años
 const rulesEl=document.getElementById("rules");
@@ -1210,6 +1344,28 @@ function status(t){document.getElementById("status").textContent=t;}
       arr.forEach(c=>{if(c&&c.id&&!ids.has(c.id))comments.unshift(c);});save();render();}}catch(e){alert("JSON inválido");}};
     rd.readAsText(f);ev.target.value="";});
   render();
+})();
+</script>
+
+<script>
+// Sub-navegación sticky: enlaces a las secciones (h2) de la pestaña activa
+(function(){
+  const bar=document.getElementById("subnav"),nav=document.getElementById("nav");
+  function build(){
+    const t=document.querySelector(".tab.active"); if(!t||!bar)return;
+    const hs=[...t.querySelectorAll("h2")];
+    if(hs.length<2){bar.style.display="none";return;}
+    bar.style.display="flex";
+    bar.innerHTML=hs.map((h,i)=>{if(!h.id)h.id="s-"+t.dataset.tabid+"-"+i;
+      const lbl=h.textContent.split("·")[0].trim().slice(0,26);
+      return `<a data-y="${h.id}">${lbl}</a>`;}).join("");
+    bar.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{
+      const el=document.getElementById(a.dataset.y);
+      if(el)window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-116,behavior:"smooth"});
+    }));
+  }
+  nav.addEventListener("click",e=>{if(e.target.closest("button[data-tab]"))setTimeout(build,20);});
+  build();
 })();
 </script>
 </body>
