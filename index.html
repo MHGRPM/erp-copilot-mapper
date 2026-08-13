@@ -222,6 +222,12 @@
   .cm-new .q{font-size:12px;color:var(--pu2);background:#fff;border:1px solid var(--line);border-radius:6px;padding:5px 8px;margin-bottom:6px;max-height:64px;overflow:auto}
   .cm-new textarea{width:100%;height:64px;font-size:13px;padding:8px;border:1px solid var(--line);border-radius:8px;resize:vertical;font-family:var(--body)}
   .cm-foot{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+  .cm-item.flash{box-shadow:0 0 0 2px #00e0c6;border-color:#00e0c6}
+  .cm-item .go{color:var(--teal);font-weight:600;text-decoration:none;cursor:pointer}
+  /* Resaltado neón del texto comentado (persistente) */
+  mark.cm-hl{background:rgba(0,224,198,.16);border-bottom:2px solid #00e0c6;box-shadow:0 0 6px rgba(0,224,198,.6);
+    border-radius:3px;padding:0 1px;color:inherit;cursor:pointer}
+  mark.cm-hl.flash{background:rgba(0,224,198,.4);box-shadow:0 0 0 3px #00e0c6,0 0 18px #00e0c6}
 </style>
 </head>
 <body>
@@ -936,9 +942,33 @@ function build(){
   document.getElementById("json").value=JSON.stringify(cfg,null,2);
   const ch=document.querySelectorAll(".changed").length;
   document.getElementById("srcTag").textContent=ch?`${ch} cambio(s)`:"por defecto";
+  try{localStorage.setItem("erpco_fieldmap",JSON.stringify(cfg));}catch(e){}
   return cfg;
 }
 build();
+
+// ===== Auto-guardado: restaura TODO lo editado al recargar =====
+function getPath(o,p){return p.split(".").reduce((a,k)=>(a&&a[k]!=null)?a[k]:null,o);}
+function applyCfg(cfg){
+  document.querySelectorAll("[data-card]").forEach(card=>{
+    const s=card.querySelector("[data-sel]"),inp=card.querySelector("[data-path]"),def=inp.getAttribute("placeholder");
+    const v=getPath(cfg,inp.dataset.path);
+    if(v!=null){inp.value=v;const o=[...s.options].find(o=>o.value===v);s.value=o?v:"__custom__";mark(card,inp,def);}
+  });
+  if(cfg.rules){
+    if(Array.isArray(cfg.rules.yearsByStage)&&cfg.rules.yearsByStage.length) loadRules(cfg.rules.yearsByStage);
+    if(cfg.rules.defaultYears!=null) document.getElementById("defYears").value=cfg.rules.defaultYears;
+    if(Array.isArray(cfg.rules.categoryByStage)&&cfg.rules.categoryByStage.length) loadCats(cfg.rules.categoryByStage);
+    if(cfg.rules.horizonMonths!=null) document.getElementById("horizonMonths").value=cfg.rules.horizonMonths;
+    ["funnelView","forecastView"].forEach(name=>{
+      const val=cfg.rules[name]; if(!val) return;
+      const el=document.querySelector(`input[name="${name}"][value="${val}"]`); if(!el) return; el.checked=true;
+      document.querySelectorAll(`#${name==="funnelView"?"funnelViews":"forecastViews"} .view`).forEach(v=>v.classList.toggle("sel",v.dataset.view===val));
+    });
+  }
+  build();
+}
+try{const _s=JSON.parse(localStorage.getItem("erpco_fieldmap")||"null"); if(_s) applyCfg(_s);}catch(e){}
 
 // Botones
 document.getElementById("copy").addEventListener("click",async()=>{
@@ -968,24 +998,69 @@ function status(t){document.getElementById("status").textContent=t;}
   const $=id=>document.getElementById(id);
   let comments=[]; try{comments=JSON.parse(localStorage.getItem(KEY)||"[]");}catch(e){}
   const drawer=$("cmDrawer"),sel=$("cmSel"),list=$("cmList"),count=$("cmCount"),author=$("cmAuthor"),
-    newBox=$("cmNew"),newQ=$("cmNewQ"),newText=$("cmNewText");
+    newBox=$("cmNew"),newQ=$("cmNewQ"),newText=$("cmNewText"),nav=document.getElementById("nav");
   author.value=localStorage.getItem(AKEY)||"TICO MASTER COPILOT";
-  author.addEventListener("change",()=>localStorage.setItem(AKEY,author.value.trim()));
+  ["change","input"].forEach(ev=>author.addEventListener(ev,()=>localStorage.setItem(AKEY,author.value.trim())));
+  newText.addEventListener("input",()=>localStorage.setItem("erpco_cmdraft",newText.value));
   const save=()=>localStorage.setItem(KEY,JSON.stringify(comments));
   const esc=s=>(s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const norm=s=>(s||"").replace(/\s+/g," ").trim();
   const activeTab=()=>{const b=document.querySelector('nav button.active');return b?b.textContent.trim():"";};
+  const activeTabId=()=>{const s=document.querySelector('.tab.active');return s?s.dataset.tabid:"";};
+
+  // ---- Resaltado neón persistente: busca el texto comentado y lo envuelve en <mark> ----
+  function findAndWrap(sec,quote,cid){
+    if(!sec) return false;
+    if(sec.querySelector('mark.cm-hl[data-cid="'+cid+'"]')) return true;
+    const q=(quote||"").trim(); if(q.length<3) return false;
+    const w=document.createTreeWalker(sec,NodeFilter.SHOW_TEXT,null); let n;
+    while(n=w.nextNode()){
+      if(!n.nodeValue||n.parentElement.closest("mark.cm-hl,script,style,textarea")) continue;
+      const i=n.nodeValue.indexOf(q); if(i<0) continue;
+      const r=document.createRange(); r.setStart(n,i); r.setEnd(n,i+q.length);
+      const m=document.createElement("mark"); m.className="cm-hl"; m.dataset.cid=cid;
+      try{ r.surroundContents(m); }catch(e){ return false; }
+      m.title="Comentario de revisión — clic para verlo";
+      m.addEventListener("click",()=>{drawer.classList.add("open");flashItem(cid);});
+      return true;
+    }
+    return false;
+  }
+  function applyHighlights(tabId){
+    const sec=document.querySelector('.tab[data-tabid="'+tabId+'"]'); if(!sec) return;
+    comments.filter(c=>c.tabId===tabId).forEach(c=>findAndWrap(sec,c.quote,c.id));
+  }
+  function removeHighlight(cid){document.querySelectorAll('mark.cm-hl[data-cid="'+cid+'"]').forEach(m=>{
+    const p=m.parentNode; while(m.firstChild)p.insertBefore(m.firstChild,m); p.removeChild(m); p.normalize&&p.normalize();});}
+  function flashItem(cid){const it=list.querySelector('[data-item="'+cid+'"]');if(it){it.scrollIntoView({block:"center"});it.classList.add("flash");setTimeout(()=>it.classList.remove("flash"),1400);}}
+  function gotoTab(id){const b=document.querySelector('nav button[data-tab="'+id+'"]'); if(b&&!b.classList.contains("active"))b.click();}
+  function gotoComment(c){
+    gotoTab(c.tabId);
+    setTimeout(()=>{
+      const sec=document.querySelector('.tab[data-tabid="'+c.tabId+'"]');
+      let m=sec&&sec.querySelector('mark.cm-hl[data-cid="'+c.id+'"]');
+      if(!m&&sec){findAndWrap(sec,c.quote,c.id);m=sec.querySelector('mark.cm-hl[data-cid="'+c.id+'"]');}
+      if(m){m.scrollIntoView({behavior:"smooth",block:"center"});m.classList.add("flash");setTimeout(()=>m.classList.remove("flash"),1500);}
+      else if(sec){sec.scrollIntoView({behavior:"smooth"});}
+    },80);
+  }
+
   function render(){
     count.textContent=comments.length;
-    if(!comments.length){list.innerHTML='<div class="cm-empty">Sin comentarios todavía.<br>Selecciona texto en cualquier pestaña y pulsa «+ Comentar».</div>';return;}
-    list.innerHTML=comments.map(c=>`<div class="cm-item"><div class="q">${esc(c.quote)}</div>
+    if(!comments.length){list.innerHTML='<div class="cm-empty">Sin comentarios todavía.<br>Selecciona texto (o el nombre de un campo) y pulsa «+ Comentar», o usa «+ Nuevo comentario».</div>';applyHighlights(activeTabId());return;}
+    list.innerHTML=comments.map(c=>`<div class="cm-item" data-item="${c.id}"><div class="q">${esc(norm(c.quote))}</div>
       <div class="c">${esc(c.text)}</div>
       <div class="f"><span><span class="cm-tag">${esc(c.tab)}</span> · ${esc(c.author)} · ${esc(c.when)}</span>
-      <button data-del="${c.id}">borrar</button></div></div>`).join("");
-    list.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{comments=comments.filter(x=>x.id!==b.dataset.del);save();render();}));
+      <span><a class="go" data-go="${c.id}">ir ↦</a> · <button data-del="${c.id}">borrar</button></span></div></div>`).join("");
+    list.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{const id=b.dataset.del;removeHighlight(id);comments=comments.filter(x=>x.id!==id);save();render();}));
+    list.querySelectorAll("[data-go]").forEach(a=>a.addEventListener("click",()=>{const c=comments.find(x=>x.id===a.dataset.go);if(c)gotoComment(c);}));
+    applyHighlights(activeTabId());
   }
-  let pendingQuote="",pendingTab="";
-  function openNew(quote,tab){newBox.style.display="block";newQ.textContent=quote||"(comentario general)";
-    newText.value="";newText.dataset.tab=tab||activeTab();drawer.classList.add("open");newText.focus();}
+
+  let pendingQuote="",pendingTab="",pendingTabId="";
+  function openNew(quote,tabTitle,tabId){newBox.style.display="block";newQ.textContent=norm(quote)||"(comentario general)";
+    newText.value=localStorage.getItem("erpco_cmdraft")||"";newText.dataset.q=quote||"";
+    newText.dataset.tab=tabTitle||activeTab();newText.dataset.tabid=tabId||activeTabId();drawer.classList.add("open");newText.focus();}
   document.addEventListener("mouseup",e=>{
     if(drawer.contains(e.target)||e.target===sel)return;
     setTimeout(()=>{
@@ -994,28 +1069,28 @@ function status(t){document.getElementById("status").textContent=t;}
         sel.style.display="block";
         sel.style.top=Math.max(8,r.bottom+6)+"px";
         sel.style.left=Math.min(window.innerWidth-130,Math.max(8,r.left))+"px";
-        pendingQuote=t.replace(/\s+/g," ").slice(0,300);pendingTab=activeTab();
+        pendingQuote=t.slice(0,300);pendingTab=activeTab();pendingTabId=activeTabId();
       } else sel.style.display="none";
     },0);
   });
   document.addEventListener("scroll",()=>{sel.style.display="none";},true);
-  sel.addEventListener("mousedown",ev=>ev.preventDefault()); // no perder la selección al pulsar el botón
-  sel.addEventListener("click",()=>{sel.style.display="none";openNew(pendingQuote,pendingTab);});
-  $("cmAdd").addEventListener("click",()=>{
-    const q=(window.getSelection().toString().trim()||pendingQuote||"").replace(/\s+/g," ").slice(0,300);
-    openNew(q,activeTab());});
+  sel.addEventListener("mousedown",ev=>ev.preventDefault());
+  sel.addEventListener("click",()=>{sel.style.display="none";openNew(pendingQuote,pendingTab,pendingTabId);});
+  $("cmAdd").addEventListener("click",()=>{const t=window.getSelection().toString().trim();openNew(t||pendingQuote,activeTab(),activeTabId());});
   $("cmSave").addEventListener("click",()=>{const txt=newText.value.trim();if(!txt)return;
-    comments.unshift({id:String(Date.now())+"-"+Math.round(performance.now()),quote:newQ.textContent,text:txt,
-      tab:newText.dataset.tab||activeTab(),author:author.value.trim()||"TICO MASTER",when:new Date().toLocaleString("es-ES")});
-    save();render();newBox.style.display="none";});
+    const c={id:String(Date.now())+"-"+Math.round(performance.now()),quote:newText.dataset.q||norm(newQ.textContent),text:txt,
+      tab:newText.dataset.tab||activeTab(),tabId:newText.dataset.tabid||activeTabId(),author:author.value.trim()||"TICO MASTER",when:new Date().toLocaleString("es-ES")};
+    comments.unshift(c);save();render();gotoTab(c.tabId);setTimeout(()=>applyHighlights(c.tabId),40);
+    newBox.style.display="none";localStorage.removeItem("erpco_cmdraft");newText.value="";});
   $("cmCancel").addEventListener("click",()=>newBox.style.display="none");
   $("cmBtn").addEventListener("click",()=>drawer.classList.toggle("open"));
   $("cmClose").addEventListener("click",()=>drawer.classList.remove("open"));
+  nav.addEventListener("click",e=>{if(e.target.closest('button[data-tab]'))setTimeout(()=>applyHighlights(activeTabId()),40);});
   function dl(name,content,type){const b=new Blob([content],{type});const a=document.createElement("a");
     a.href=URL.createObjectURL(b);a.download=name;a.click();}
   $("cmExport").addEventListener("click",()=>dl("comentarios-tico-master.json",JSON.stringify(comments,null,2),"application/json"));
   $("cmExportMd").addEventListener("click",()=>dl("comentarios-tico-master.md",
-    "# Comentarios de revisión · TICO MASTER COPILOT\n\n"+comments.map(c=>`## ${c.tab} — ${c.author} · ${c.when}\n> ${c.quote}\n\n${c.text}\n`).join("\n---\n"),"text/markdown"));
+    "# Comentarios de revisión · TICO MASTER COPILOT\n\n"+comments.map(c=>`## ${c.tab} — ${c.author} · ${c.when}\n> ${norm(c.quote)}\n\n${c.text}\n`).join("\n---\n"),"text/markdown"));
   $("cmImport").addEventListener("click",()=>$("cmFile").click());
   $("cmFile").addEventListener("change",ev=>{const f=ev.target.files[0];if(!f)return;const rd=new FileReader();
     rd.onload=()=>{try{const arr=JSON.parse(rd.result);if(Array.isArray(arr)){const ids=new Set(comments.map(c=>c.id));
