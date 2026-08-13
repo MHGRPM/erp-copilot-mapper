@@ -200,8 +200,8 @@
   #cmBtn{position:fixed;right:18px;bottom:18px;z-index:60;background:var(--pu);color:#fff;border:0;border-radius:999px;
     padding:11px 18px;font-weight:600;font-size:13px;cursor:pointer;box-shadow:0 10px 26px rgba(90,61,84,.32)}
   #cmBtn .b{background:#fff;color:var(--pu);border-radius:999px;padding:0 7px;margin-left:7px;font-size:12px;font-weight:700}
-  #cmSel{position:absolute;z-index:70;background:var(--pu);color:#fff;border:0;border-radius:8px;padding:6px 11px;
-    font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25);display:none}
+  #cmSel{position:fixed;z-index:70;background:var(--pu);color:#fff;border:0;border-radius:8px;padding:7px 12px;
+    font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.28);display:none}
   #cmDrawer{position:fixed;top:0;right:-440px;width:410px;max-width:94vw;height:100vh;background:#fff;z-index:65;
     box-shadow:-14px 0 44px rgba(0,0,0,.18);transition:right .2s;display:flex;flex-direction:column;border-left:1px solid var(--line)}
   #cmDrawer.open{right:0}
@@ -760,6 +760,10 @@
   <div class="cm-h"><b>Comentarios · TICO MASTER</b><button class="x" id="cmClose" title="Cerrar">✕</button></div>
   <div class="cm-meta"><label class="mini" style="min-width:auto">Revisor:</label>
     <input id="cmAuthor" placeholder="TICO MASTER COPILOT"></div>
+  <div style="padding:10px 16px;border-bottom:1px solid var(--line)">
+    <button class="act" id="cmAdd" style="width:100%">+ Nuevo comentario</button>
+    <div class="cap" style="margin-top:6px">Selecciona texto en la página y se copiará aquí; o comenta en general.</div>
+  </div>
   <div class="cm-new" id="cmNew" style="display:none">
     <div class="q" id="cmNewQ"></div>
     <textarea id="cmNewText" placeholder="Comenta esta selección: qué mejorar, qué corregir, correlación de campo correcta…"></textarea>
@@ -980,19 +984,26 @@ function status(t){document.getElementById("status").textContent=t;}
     list.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{comments=comments.filter(x=>x.id!==b.dataset.del);save();render();}));
   }
   let pendingQuote="",pendingTab="";
+  function openNew(quote,tab){newBox.style.display="block";newQ.textContent=quote||"(comentario general)";
+    newText.value="";newText.dataset.tab=tab||activeTab();drawer.classList.add("open");newText.focus();}
   document.addEventListener("mouseup",e=>{
     if(drawer.contains(e.target)||e.target===sel)return;
-    const s=window.getSelection(),t=s&&s.toString().trim();
-    if(t&&t.length>2){const r=s.getRangeAt(0).getBoundingClientRect();
-      sel.style.display="block";
-      sel.style.top=(window.scrollY+r.bottom+6)+"px";
-      sel.style.left=(window.scrollX+Math.max(8,r.left))+"px";
-      pendingQuote=t.replace(/\s+/g," ").slice(0,300);pendingTab=activeTab();
-    } else sel.style.display="none";
+    setTimeout(()=>{
+      const s=window.getSelection(),t=s&&s.toString().trim();
+      if(t&&t.length>2){const r=s.getRangeAt(0).getBoundingClientRect();
+        sel.style.display="block";
+        sel.style.top=Math.max(8,r.bottom+6)+"px";
+        sel.style.left=Math.min(window.innerWidth-130,Math.max(8,r.left))+"px";
+        pendingQuote=t.replace(/\s+/g," ").slice(0,300);pendingTab=activeTab();
+      } else sel.style.display="none";
+    },0);
   });
   document.addEventListener("scroll",()=>{sel.style.display="none";},true);
-  sel.addEventListener("click",()=>{sel.style.display="none";newBox.style.display="block";newQ.textContent=pendingQuote;
-    newText.value="";newText.dataset.tab=pendingTab;drawer.classList.add("open");newText.focus();});
+  sel.addEventListener("mousedown",ev=>ev.preventDefault()); // no perder la selección al pulsar el botón
+  sel.addEventListener("click",()=>{sel.style.display="none";openNew(pendingQuote,pendingTab);});
+  $("cmAdd").addEventListener("click",()=>{
+    const q=(window.getSelection().toString().trim()||pendingQuote||"").replace(/\s+/g," ").slice(0,300);
+    openNew(q,activeTab());});
   $("cmSave").addEventListener("click",()=>{const txt=newText.value.trim();if(!txt)return;
     comments.unshift({id:String(Date.now())+"-"+Math.round(performance.now()),quote:newQ.textContent,text:txt,
       tab:newText.dataset.tab||activeTab(),author:author.value.trim()||"TICO MASTER",when:new Date().toLocaleString("es-ES")});
