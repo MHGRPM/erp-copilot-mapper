@@ -708,18 +708,19 @@
         <button class="act ghost" id="reset">Restablecer todo</button>
       </div>
       <div class="status" id="status"></div>
-      <div class="how"><b>Cómo lo usa la extensión (¿en vivo?)</b>
+      <div class="how"><b>Dónde se guardan estas instrucciones y cómo se importan</b>
         <ol>
-          <li><b>Instantáneo (para afinar):</b> copia el JSON → extensión, Ajustes → «Mapa de campos» → pega →
-            <i>Aplicar</i>. El embudo se recalcula al momento.</li>
-          <li><b>Por GitHub:</b> guarda el JSON en <code>config/field-map.default.json</code>, copia su URL <i>raw</i>
-            y pégala en «Cargar de URL». GitHub cachea el raw ~1–5 min, así que hay que pulsar para traer la última.</li>
-          <li>Una página estática no empuja cambios sola a la extensión: siempre es la extensión la que <b>tira</b>
-            del dato. Para el sprint de revisión, usa el modo 1.</li>
+          <li><b>El archivo maestro es este JSON</b> (<code>field-map.json</code>). Marc lo edita en el repo (aquí en
+            Claude); tú puedes <i>Descargar</i> el que generes en esta página y mandárselo, o copiarlo tal cual.</li>
+          <li><b>Importar en la extensión (instantáneo y permanente):</b> Ajustes → «Mapa de campos» → pega el JSON →
+            <i>Aplicar</i>. Queda guardado en el navegador; el embudo se recalcula al momento y NO hay que repetirlo.</li>
+          <li><b>Importar por URL (siempre la última versión):</b> en «Cargar de URL» pega
+            <code>https://raw.githubusercontent.com/MHGRPM/erp-copilot-mapper/main/field-map.json</code> y pulsa.
+            Así, cada vez que se actualice el archivo, la extensión trae la versión nueva (GitHub cachea el raw ~1–5 min).</li>
         </ol>
-        <div class="cap" style="margin-top:8px">Nota: <code>rules.funnelView</code> y <code>rules.forecastView</code>
-          quedan guardados en el JSON como preferencia; hoy la extensión pinta «barras» y «tarjetas», el resto se
-          cablea si os gustan.</div>
+        <div class="cap" style="margin-top:8px">Una página estática no empuja sola a la extensión: siempre es la extensión
+          la que <b>tira</b> del dato (pegar o «Cargar de URL»). <code>rules.funnelView</code> y <code>forecastView</code>
+          se guardan como preferencia; hoy la extensión pinta «barras» y «tarjetas».</div>
       </div>
     </div>
   </section>
