@@ -1,0 +1,185 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Validar campos · ERP Copilot mapper</title>
+<style>
+:root{
+  --brand:#714B67;--brand-2:#8A5E7E;--brand-soft:#F1EAF0;--brand-ink:#5B3C53;
+  --teal:#017E84;--teal-soft:#E1F1F1;--edit:#7C3AED;--edit-soft:#F1EBFE;--edit-line:#D9CBF3;
+  --bg:#F4F1F4;--card:#FFFFFF;--ink:#211C21;--soft:#6B5F68;--line:#E6DDE4;
+  --ok-t:#0F6B30;--ok-b:#E8F5E9;--warn-t:#8B5A00;--warn-b:#FFF3DE;--bad-t:#9A3E48;--bad-b:#FCEAEC;
+  --mono:"JetBrains Mono","Cascadia Code",ui-monospace,Consolas,monospace;
+  --sans:-apple-system,"Segoe UI",Inter,system-ui,sans-serif;
+}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 20px 60px}
+.head h1{margin:0 0 4px;font-size:24px;font-weight:800;letter-spacing:-.02em}
+.head p{margin:0;color:var(--soft);font-size:14px;max-width:74ch}
+.bar{position:sticky;top:0;z-index:20;background:rgba(244,241,244,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:12px 0;margin:16px 0 6px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.prog{font-size:13px;color:var(--soft)} .prog b{color:var(--brand)}
+.bar .sp{flex:1}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:9px 15px;font:700 13px var(--sans);cursor:pointer;color:var(--ink)}
+.btn.primary{background:var(--edit);color:#fff;border-color:var(--edit)} .btn.ok{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn:hover{filter:brightness(.97)}
+.src{font:700 10px var(--mono);color:var(--soft)}
+.area{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.area-h{display:flex;align-items:center;gap:10px;padding:12px 16px;color:#fff;font-weight:800;font-size:14px}
+.area-h .cnt{margin-left:auto;font:700 11px var(--mono);opacity:.85}
+.area.crm .area-h{background:var(--brand)} .area.forecast .area-h{background:#4b3444} .area.clientes .area-h{background:var(--edit)} .area.proyectos .area-h{background:var(--teal)}
+.area-d{font-size:12px;color:var(--soft);padding:9px 16px;border-bottom:1px solid var(--line);background:#faf7f9}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;padding:8px 14px;font:700 9px var(--mono);letter-spacing:.06em;color:var(--soft);text-transform:uppercase;border-bottom:1px solid var(--line);background:#faf7f9}
+tbody td{padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:13px}
+tbody tr:last-child td{border-bottom:0}
+tr.done{background:var(--ok-b)} tr.validate td .dato{color:var(--warn-t)}
+.dato{font-weight:700} .dato .flag{font:700 8px var(--mono);background:var(--warn-b);color:var(--warn-t);padding:1px 5px;border-radius:4px;margin-left:6px}
+.cur code{font:12px var(--mono);color:var(--teal);background:var(--teal-soft);padding:2px 6px;border-radius:5px}
+.real input{width:100%;border:1px solid var(--edit-line);border-radius:7px;padding:6px 9px;font:12.5px var(--mono);color:var(--ink);background:#fff}
+.real input:focus{outline:2px solid var(--edit-soft);border-color:var(--edit)}
+.chk{display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none;font-size:12px;color:var(--soft)}
+.chk input{width:18px;height:18px;accent-color:var(--ok-t);cursor:pointer}
+.chk.on{color:var(--ok-t);font-weight:700}
+.nota input{width:100%;border:1px solid var(--line);border-radius:7px;padding:6px 9px;font:12.5px var(--sans);color:var(--ink);background:#fff}
+.out{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:8px}
+.out h3{margin:0 0 8px;font-size:14px}
+textarea{width:100%;height:280px;border:1px solid var(--line);border-radius:10px;background:#14121a;color:#e8e2f2;font:12px var(--mono);padding:12px;resize:vertical}
+.hint{font-size:12px;color:var(--soft);margin-top:8px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(18px);background:#2b232b;color:#fff;border-radius:10px;padding:11px 16px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:40}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.legend{font-size:12px;color:var(--soft);margin-top:6px} .legend b{color:var(--warn-t)}
+@media(max-width:760px){thead{display:none}tbody td{display:block;border:0;padding:4px 14px}tbody tr{border-bottom:1px solid var(--line);padding:8px 0;display:block}}
+</style>
+
+<div class="wrap">
+  <div class="head">
+    <h1>Validar campos de Odoo · por área</h1>
+    <p>Revisa cada dato de la app y confirma si el <b>campo de Odoo</b> es el correcto. Si hay que cambiarlo, escribe el campo real al lado y marca <b>Confirmado</b>. Todo se guarda solo en este navegador; al final genera el JSON para llevarlo a Cloud y mejorar la app.</p>
+  </div>
+
+  <div class="bar">
+    <span class="prog" id="prog">—</span>
+    <span class="src" id="src">field-map.json</span>
+    <span class="sp"></span>
+    <button class="btn" id="reset">Reiniciar cambios</button>
+    <button class="btn ok" id="gen">Generar JSON</button>
+    <button class="btn primary" id="save">Guardar</button>
+  </div>
+  <div class="legend">Campos marcados <b>validar</b> = dudosos (no está claro si el dato vive en Odoo central o en el Odoo del partner). Prioriza esos.</div>
+
+  <div id="areas"></div>
+
+  <div class="out" id="outbox" hidden>
+    <h3>field-map.json · con tus confirmaciones y correcciones</h3>
+    <textarea id="out" readonly spellcheck="false"></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn ok" id="copy">Copiar</button>
+      <button class="btn" id="download">Descargar field-map.json</button>
+    </div>
+    <div class="hint">Copia esto y pégalo en el repo (o en Cloud) cuando quieras. Tus confirmaciones quedan guardadas aquí aunque cierres.</div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const LS='ecm_validacion_v1';
+// Definición homogénea de TODAS las áreas: cada campo = { key (en field-map), dato (nombre humano), path (dónde en el json), validate }
+const AREAS=[
+ {id:'crm',cls:'crm',title:'CRM · Embudo',jsonKey:'lead',
+  desc:'Oportunidades del partner (crm.lead). Alimentan el embudo, la conversión y el ciclo de venta.',
+  fields:[
+   ['revenue','Ingreso esperado (ticket)'],['mrr','MRR mensual (licencia)'],['mrrFallback','MRR alternativo'],
+   ['probability','Probabilidad'],['stage','Etapa del embudo'],['active','Activa / perdida'],
+   ['createDate','Fecha de creación'],['closeDate','Fecha de cierre'],['cycleDays','Ciclo de venta (días)'],
+   ['deadline','Fecha de cierre estimada'],['dwellDate','Último cambio de etapa'],['tags','Etiqueta de forecast'],
+   ['partnerAssigned','Partner asignado'],['partnerCustomer','Cliente de la oportunidad'],['owner','Comercial (PM)']]},
+ {id:'clientes',cls:'clientes',title:'Fidelización · Clientes',jsonKey:'partner',
+  desc:'La cartera de clientes del partner (res.partner). Renovación, MRR, riesgo de fuga y upsell.',
+  fields:[
+   ['customer','Cliente / cuenta'],['name','Nombre'],['isCompany','Es empresa'],
+   ['mrr','MRR del cliente',true],['renewalDate','Fecha de renovación',true],['users','Usuarios / licencias',true],
+   ['lastContact','Último contacto'],['nps','Satisfacción / NPS',true],['segment','Segmento (etiqueta)']]},
+ {id:'proyectos',cls:'proyectos',title:'Ejecución · Proyectos',jsonKey:'project',
+  desc:'Proyectos de implantación del cliente (project.*). Hitos plan vs real, horas y desviación.',
+  fields:[
+   ['project','Proyecto del cliente',true],['partner','Cliente del proyecto'],['milestone','Hitos (modelo)'],
+   ['milestoneDeadline','Hito · fecha planificada'],['milestoneRealDate','Hito · fecha real',true],
+   ['taskStage','Estado / fase'],['plannedHours','Horas previstas'],['realHours','Horas reales']]},
+];
+
+let MAP=null, DEF=null;
+const state = load();
+function load(){ try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return {}} }
+function persist(){ localStorage.setItem(LS, JSON.stringify(state)); }
+const $=s=>document.querySelector(s);
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1600);}
+
+async function boot(){
+  try{ MAP = await (await fetch('field-map.json?t='+Date.now())).json(); }
+  catch(e){ MAP = {version:2, lead:{}, partner:{}, project:{}}; $('#src').textContent='field-map.json no encontrado (usa vacío)'; }
+  DEF = JSON.parse(JSON.stringify(MAP));
+  render();
+}
+function curVal(jsonKey,fkey){ return (MAP[jsonKey]||{})[fkey] || ''; }
+function st(area,fkey){ return (state[area]&&state[area][fkey]) || {}; }
+function setSt(area,fkey,patch){ state[area]=state[area]||{}; state[area][fkey]={...st(area,fkey),...patch}; persist(); updateProg(); }
+
+function render(){
+  $('#areas').innerHTML = AREAS.map(a=>{
+    const rows=a.fields.map(f=>{
+      const [fkey,dato,validate]=f;
+      const cur=curVal(a.jsonKey,fkey);
+      const s=st(a.id,fkey);
+      const realVal = s.real!=null ? s.real : cur;
+      const confirmed = !!s.confirmed;
+      return `<tr class="${confirmed?'done':''} ${validate?'validate':''}" data-a="${a.id}" data-f="${fkey}">
+        <td class="dato"><span class="dato">${dato}</span>${validate?'<span class="flag">VALIDAR</span>':''}</td>
+        <td class="cur">${cur?`<code>${cur}</code>`:'<span style="color:var(--soft)">—</span>'}</td>
+        <td class="real"><input value="${escapeHtml(realVal)}" placeholder="campo real en Odoo" data-real></td>
+        <td><label class="chk ${confirmed?'on':''}"><input type="checkbox" ${confirmed?'checked':''} data-chk> Confirmado</label></td>
+        <td class="nota"><input value="${escapeHtml(s.nota||'')}" placeholder="nota / duda" data-nota></td>
+      </tr>`;
+    }).join('');
+    return `<div class="area ${a.cls}">
+      <div class="area-h">${a.title}<span class="cnt" id="cnt-${a.id}"></span></div>
+      <div class="area-d">${a.desc}</div>
+      <table><thead><tr><th style="width:24%">Dato en la app</th><th style="width:22%">Campo Odoo (actual)</th><th style="width:22%">Campo real (si cambia)</th><th style="width:16%">Confirmado</th><th>Nota</th></tr></thead><tbody>${rows}</tbody></table>
+    </div>`;
+  }).join('');
+  wire(); updateProg();
+}
+function wire(){
+  $('#areas').querySelectorAll('tr[data-a]').forEach(tr=>{
+    const a=tr.dataset.a, f=tr.dataset.f;
+    tr.querySelector('[data-real]').addEventListener('input',e=>setSt(a,f,{real:e.target.value}));
+    tr.querySelector('[data-nota]').addEventListener('input',e=>setSt(a,f,{nota:e.target.value}));
+    tr.querySelector('[data-chk]').addEventListener('change',e=>{setSt(a,f,{confirmed:e.target.checked});tr.classList.toggle('done',e.target.checked);tr.querySelector('.chk').classList.toggle('on',e.target.checked);});
+  });
+}
+function updateProg(){
+  let total=0,done=0;
+  AREAS.forEach(a=>{let t=a.fields.length,d=a.fields.filter(f=>st(a.id,f[0]).confirmed).length;total+=t;done+=d;const el=$('#cnt-'+a.id);if(el)el.textContent=d+'/'+t+' confirmados';});
+  $('#prog').innerHTML=`<b>${done}</b> / ${total} campos confirmados`;
+}
+function buildJson(){
+  const out=JSON.parse(JSON.stringify(MAP)); out.version=(MAP.version||1);
+  out._review={ at:new Date().toISOString().slice(0,10), confirmed:{}, notes:{} };
+  AREAS.forEach(a=>{
+    out[a.jsonKey]=out[a.jsonKey]||{};
+    a.fields.forEach(f=>{
+      const fkey=f[0], s=st(a.id,fkey);
+      if(s.real!=null && s.real.trim()) out[a.jsonKey][fkey]=s.real.trim();       // corrección
+      if(s.confirmed) (out._review.confirmed[a.jsonKey]=out._review.confirmed[a.jsonKey]||[]).push(fkey);
+      if(s.nota) out._review.notes[a.jsonKey+'.'+fkey]=s.nota;
+    });
+  });
+  return JSON.stringify(out,null,2);
+}
+function escapeHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+$('#gen').addEventListener('click',()=>{$('#out').value=buildJson();$('#outbox').hidden=false;$('#outbox').scrollIntoView({behavior:'smooth'});});
+$('#save').addEventListener('click',()=>{persist();toast('Guardado en este navegador · no se pierde');});
+$('#reset').addEventListener('click',()=>{if(confirm('¿Borrar tus confirmaciones y correcciones de este navegador?')){localStorage.removeItem(LS);for(const k in state)delete state[k];render();toast('Reiniciado');}});
+$('#copy').addEventListener('click',async()=>{await navigator.clipboard.writeText($('#out').value);toast('JSON copiado');});
+$('#download').addEventListener('click',()=>{const b=new Blob([$('#out').value],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='field-map.json';a.click();toast('Descargado');});
+boot();
+</script>
