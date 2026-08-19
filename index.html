@@ -288,6 +288,7 @@
   mark.cm-hl{background:rgba(0,224,198,.16);border-bottom:2px solid #00e0c6;box-shadow:0 0 6px rgba(0,224,198,.6);
     border-radius:3px;padding:0 1px;color:inherit;cursor:pointer}
   mark.cm-hl.flash{background:rgba(0,224,198,.4);box-shadow:0 0 0 3px #00e0c6,0 0 18px #00e0c6}
+.valbar{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#F1EBFE;border:1px solid #D9CBF3;border-radius:10px;padding:10px 14px;margin:0 0 14px;flex-wrap:wrap}.valbar span{font-size:12.5px;color:#5b2ea8}.valbar a{background:#7C3AED;color:#fff;text-decoration:none;border-radius:8px;padding:8px 13px;font-weight:700;font-size:12.5px;white-space:nowrap}.valbar a:hover{filter:brightness(1.08)}
 </style>
 </head>
 <body>
@@ -540,6 +541,7 @@
       <p>Lee el CRM real del partner y calcula el embudo: conversión, MRR, ciclo de venta y fuga por etapa.
       Aquí decides qué campo de Odoo alimenta cada métrica.</p></div>
     <div class="pad">
+      <div class="valbar"><span><b>Validación de campos unificada:</b> confirma o corrige cada campo (todas las áreas) en una sola página del equipo.</span><a href="validar.html">✓ Validar campos ↦</a></div>
       <div class="zone">
         <span class="zone-lbl content">Contenido · referencia</span>
         <div class="guide" style="margin:0 0 12px"><b>Cómo carga el CRM.</b> Busca oportunidades del partner por dos vías —
@@ -610,6 +612,7 @@
       <b>etiquetas del CRM de Odoo</b> — Commit · Best Case · Pipeline · Initial — y cada etapa del embudo exige unos
       requisitos para entrar en el forecast.</p></div>
     <div class="pad">
+      <div class="valbar"><span><b>Validación de campos unificada:</b> confirma o corrige cada campo (todas las áreas) en una sola página del equipo.</span><a href="validar.html">✓ Validar campos ↦</a></div>
       <div class="warnbox"><b>Estado en la extensión (honesto).</b> Hoy el forecast se calcula por <b>trimestres</b> con
         cascada de valoración y probabilidad por etapa global. Para seguir esta Definición Final hay que cablear:
         (1) leer la <b>etiqueta</b> (Commit/Best Case/Pipeline/Initial), (2) aplicar su probabilidad y su regla de
@@ -713,12 +716,12 @@
 
   <!-- ============ FIDELIZACIÓN · CLIENTES ============ -->
   <section class="tab" data-tabid="clientes">
-    <div class="head"><div class="eyebrow">Postventa · por validar con el equipo</div><h1>Fidelización · Clientes</h1>
+    <div class="head"><div class="eyebrow">Postventa · qué datos usamos</div><h1>Fidelización · Clientes</h1>
       <p>La cartera de clientes del partner: quién puede irse (churn), quién puede crecer (upsell) y qué acciones de valor
       hay planificadas. Fuente: <b>Odoo central</b> — los clientes salen de las oportunidades ganadas asignadas al partner
-      (<code>partner_assigned_id</code>), y el cliente final es <code>partner_id</code>. Validad campo a campo si el dato
-      existe en Odoo central o hay que traerlo del Odoo del partner.</p></div>
+      (<code>partner_assigned_id</code>), y el cliente final es <code>partner_id</code>.</p></div>
     <div class="pad">
+      <div class="valbar"><span><b>Validación de campos unificada:</b> confirma o corrige cada campo (todas las áreas) en una sola página del equipo.</span><a href="validar.html">✓ Validar campos ↦</a></div>
       <div class="zone"><span class="zone-lbl content">Contenido · de dónde sale cada dato</span>
         <table class="metrics">
           <tr><th>Dato en la app</th><th>Odoo · modelo.campo</th><th>Cómo se obtiene / a validar</th></tr>
@@ -738,11 +741,11 @@
 
   <!-- ============ EJECUCIÓN · PROYECTOS ============ -->
   <section class="tab" data-tabid="proyectos">
-    <div class="head"><div class="eyebrow">Postventa · por validar con el equipo</div><h1>Ejecución · Proyectos</h1>
+    <div class="head"><div class="eyebrow">Postventa · qué datos usamos</div><h1>Ejecución · Proyectos</h1>
       <p>Los proyectos de implantación de los clientes: hitos planificados vs reales, desviación de horas y de plazos.
-      Fuente: <b>Odoo central</b> (a validar: los proyectos de entrega suelen vivir en el Odoo del partner, no en central).
-      El objetivo es el seguimiento CSTI: que los hitos se cumplan a tiempo y mejorar la experiencia de entrega.</p></div>
+      Fuente: <b>Odoo central</b>. El objetivo es el seguimiento CSTI: que los hitos se cumplan a tiempo y mejorar la experiencia de entrega.</p></div>
     <div class="pad">
+      <div class="valbar"><span><b>Validación de campos unificada:</b> confirma o corrige cada campo (todas las áreas) en una sola página del equipo.</span><a href="validar.html">✓ Validar campos ↦</a></div>
       <div class="zone"><span class="zone-lbl content">Contenido · de dónde sale cada dato</span>
         <table class="metrics">
           <tr><th>Dato en la app</th><th>Odoo · modelo.campo</th><th>Cómo se obtiene / a validar</th></tr>
