@@ -558,14 +558,9 @@
 
       <div class="crm-grid">
         <div class="zone edit">
-          <span class="zone-lbl edit">Edición · mapeo de campos</span>
-          <p class="treehint" style="margin-top:0">Clic en un campo para ver su dato de ejemplo y validarlo (panel derecho). Cambia el desplegable para corregir la asignación; se guarda solo.</p>
-          <h3 style="margin-top:6px">crm.lead</h3>
-          <div id="ed-crm-lead"></div>
-          <h3>Filtro de oportunidades</h3>
-          <div id="ed-crm-filter"></div>
-          <h3>Etapas · crm.stage</h3>
-          <div id="ed-crm-stage"></div>
+          <span class="zone-lbl edit">Validación de campos</span>
+          <p class="treehint" style="margin-top:0">La validación de los campos del embudo (y de todas las áreas) está unificada en una sola página, para que la experiencia sea igual en todo. Confirma o corrige ahí cada campo — <code>crm.lead</code>, filtro de oportunidades y etapas <code>crm.stage</code>.</p>
+          <a href="validar.html" style="display:inline-block;background:#7C3AED;color:#fff;text-decoration:none;border-radius:8px;padding:9px 14px;font-weight:700;font-size:12.5px;margin-top:6px">✓ Validar campos del embudo ↦</a>
         </div>
 
         <div class="crm-side">
@@ -682,8 +677,8 @@
               <label class="mini" style="min-width:auto">Horizonte (meses):</label>
               <input type="text" id="horizonMonths" class="yr" value="6"></div></div>
 
-          <h2>Mapa de campos · presupuestos (sale.order)</h2>
-          <div id="ed-fc-quote"></div>
+          <h2>Mapa de campos</h2>
+          <div class="guide">La validación de todos los campos (incluido <code>sale.order</code> de presupuestos) está en la página unificada, igual que en el resto de áreas — misma experiencia para todos. <a href="validar.html" style="color:#7C3AED;font-weight:700;text-decoration:none">✓ Validar campos ↦</a></div>
 
           <h2>Valoración de respaldo · años de MRR por etapa</h2>
           <div class="guide">Respaldo cuando no hay importe estimado: <b>MRR × 12 × años</b> según la etapa. En el modelo
@@ -1058,7 +1053,7 @@ const DEFAULT_RULES=[{match:"negoti|negocia",years:3},{match:"proposi|propuesta"
 
 function opts(list,val){return list.map(f=>`<option value="${f}"${f===val?" selected":""}>${f}</option>`).join("");}
 function renderEditor(id){
-  const cont=document.getElementById(id); const cands=CANDS[SLOTS[id].cand]||[];
+  const cont=document.getElementById(id); if(!cont) return; const cands=CANDS[SLOTS[id].cand]||[];
   SLOTS[id].items.forEach(s=>{
     const inSel=cands.includes(s.def);
     cont.insertAdjacentHTML("beforeend",`<div class="fcard" data-card data-field="${s.path}">
