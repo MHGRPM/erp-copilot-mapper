@@ -5,6 +5,7 @@
     "mrr": "recurring_revenue_monthly",
     "mrrFallback": "recurring_revenue",
     "probability": "probability",
+    "_probabilityUsage": "SOLO referencia · el forecast NO usa este campo de Odoo · la probabilidad sale de NUESTRA metodología (ver forecastMethodology)",
     "stage": "stage_id",
     "active": "active",
     "dwellDate": "date_last_stage_update",
@@ -69,6 +70,29 @@
       }
     ],
     "defaultYears": 1
+  },
+  "forecastMethodology": {
+    "_source": "PDF «El Embudo y sus Exigencias» + consenso 2026-07-29. Espejo de FC_LABELS / FC_CRM_STAGES de la app (source of truth: docs/METODOLOGIA_FORECAST.md).",
+    "_principio": "El bloque Forecast NO duplica el CRM de Odoo. De Odoo se LEE (etapa, etiqueta, MRR, fecha de cierre, tiempo en etapa). La clasificación, la probabilidad y la ponderación las pone NUESTRA metodología.",
+    "probabilitySource": "metodologia_propia_NO_odoo",
+    "labels": [
+      { "key": "commit",   "label": "Commit",    "prob": 0.90, "computa": true,  "rango": "prob >90%",  "temporalidad": "cierre = fecha del presupuesto", "regla": "todo aclarado, sin competencia" },
+      { "key": "bestcase", "label": "Best Case", "prob": 0.65, "computa": true,  "rango": "50-85%",     "temporalidad": "cierre dentro del mes en curso", "regla": "muy probable" },
+      { "key": "pipeline", "label": "Pipeline",  "prob": 0.35, "computa": true,  "rango": "20-50%",     "temporalidad": "cierre a 2 meses máximo",        "regla": "activa con riesgo" },
+      { "key": "initial",  "label": "Initial",   "prob": 0.10, "computa": false, "rango": "<20%",       "temporalidad": "sin fecha fiable",               "regla": "muy verde o estancada · NO computa" }
+    ],
+    "stageToLabel": [
+      { "etapa": "Nuevo",             "label": "initial"  },
+      { "etapa": "Calificado",        "label": "pipeline" },
+      { "etapa": "Qualified Sponsor", "label": "bestcase" },
+      { "etapa": "Propuesta",         "label": "bestcase" },
+      { "etapa": "Negociación",       "label": "commit"   },
+      { "etapa": "Ganado",            "label": "won"      }
+    ],
+    "weighting": "forecast ponderado = MRR × prob(etiqueta). Initial y Ganado NO computan.",
+    "readFromOdoo": ["etapa (stage_id)", "etiqueta/tag (tag_ids)", "MRR (recurring_revenue_monthly)", "fecha cierre (date_closed / date_deadline)", "tiempo en etapa (date_last_stage_update)", "ciclo días (day_close)"],
+    "_CONFIRMAR_phaseLoss": "% de pérdida fase→fase para afinar la ponderación (acordado reforzarlo el 2026-07-29). FALTAN los valores por transición: Nuevo→Calificado, Calificado→Sponsor, Sponsor→Propuesta, Propuesta→Negociación, Negociación→Ganado.",
+    "_CONFIRMAR_cycleTimeClass": "Clasificación Run / Deal / Strategic por TIEMPO de ciclo de venta (hoy la app segmenta por tamaño MRR ≤15/16-50/50+). FALTAN los umbrales de días/meses por clase."
   },
   "partner": {
     "_area": "fidelizacion",

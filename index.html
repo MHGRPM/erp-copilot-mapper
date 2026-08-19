@@ -644,6 +644,26 @@
         <tr><td class="m-name">Ganado</td><td>Contrato firmado. Alimenta el histórico. Ajustar MRR final firmado y etiqueta de usuarios finales.</td><td>Histórico</td></tr>
       </table>
 
+      <h2>% de pérdida fase a fase <span class="pill" style="background:#fff4d6;color:#9a6b00;border-color:#f0d9b8">a confirmar</span></h2>
+      <p class="treehint">Acordado el 29-07-2026: reforzar el peso del <b>% de pérdida</b> de cada salto para afinar la ponderación del forecast. Faltan los valores por transición (los sacamos del histórico del embudo por PM).</p>
+      <table class="metrics">
+        <tr><th>Salto del embudo</th><th>% que pasa</th><th>% de pérdida</th></tr>
+        <tr><td class="m-name">Nuevo → Calificado</td><td>—</td><td>—</td></tr>
+        <tr><td class="m-name">Calificado → Qualified Sponsor</td><td>—</td><td>—</td></tr>
+        <tr><td class="m-name">Qualified Sponsor → Propuesta</td><td>—</td><td>—</td></tr>
+        <tr><td class="m-name">Propuesta → Negociación</td><td>—</td><td>—</td></tr>
+        <tr><td class="m-name">Negociación → Ganado</td><td>—</td><td>—</td></tr>
+      </table>
+
+      <h2>Clasificación por ciclo de venta · Run / Deal / Strategic <span class="pill" style="background:#fff4d6;color:#9a6b00;border-color:#f0d9b8">a confirmar</span></h2>
+      <p class="treehint">Hoy se segmenta por <b>tamaño</b> (usuarios ≤15 / 16–50 / 50+). Acordado añadir la clasificación por <b>tiempo de ciclo de venta</b>, que cambia la lectura del forecast y del seguimiento. Faltan los umbrales de meses por clase.</p>
+      <table class="metrics">
+        <tr><th>Clase</th><th>Ciclo de venta típico</th><th>Tamaño (usuarios)</th></tr>
+        <tr><td class="m-name">Run rate</td><td>— (corto)</td><td>≤ 15</td></tr>
+        <tr><td class="m-name">Deal</td><td>— (medio)</td><td>16–50</td></tr>
+        <tr><td class="m-name">Strategic</td><td>— (largo)</td><td>50+</td></tr>
+      </table>
+
       <h2>Detalle operativo por etiqueta</h2>
       <div class="grid2">
         <div class="box"><h4>Commit</h4><p>Todo aclarado y sin competencia. La <b>fecha de cierre coincide con la del
@@ -660,7 +680,7 @@
       <table class="metrics">
         <tr><th>Dato</th><th>Regla</th><th>Campo(s) Odoo</th></tr>
         <tr><td class="m-name">Categoría</td><td>La etiqueta del CRM; si falta, se deriva del nombre de la etapa</td><td><code>tag_ids</code> · <code>stage_id</code> → <code>rules.categoryByStage</code></td></tr>
-        <tr><td class="m-name">Probabilidad</td><td>Commit &gt;90 · Best Case 50–85 · Pipeline 20–50 · Initial &lt;20</td><td>por etiqueta (+ <code>probability</code>)</td></tr>
+        <tr><td class="m-name">Probabilidad</td><td><b>Nuestra metodología</b> (por etiqueta): Commit &gt;90 · Best Case 50–85 · Pipeline 20–50 · Initial &lt;20. <b>NO se lee de Odoo</b> — la probabilidad de Odoo no es nuestra configuración.</td><td>etiqueta → prob · <i>no</i> <code>probability</code></td></tr>
         <tr><td class="m-name">Fecha de cierre</td><td>Commit = fecha del presupuesto · Best Case = mes en curso · Pipeline ≤ 2 meses</td><td><code>date_deadline</code></td></tr>
         <tr><td class="m-name">Valor (MRR)</td><td>Commit = MRR en negociación · Best Case = MRR del contrato mínimo</td><td><code>recurring_revenue_monthly</code></td></tr>
         <tr><td class="m-name">Usuarios · año</td><td>Calificado entra con usuarios mínimos y 1 año (nº empleados aproxima usuarios)</td><td>nº empleados · usuarios (CRM)</td></tr>
