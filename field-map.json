@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "lead": {
     "revenue": "expected_revenue",
     "mrr": "recurring_revenue_monthly",
@@ -18,22 +18,91 @@
     "partnerCustomer": "partner_id",
     "typeFilter": "opportunity"
   },
-  "stage": { "won": "is_won", "sequence": "sequence", "name": "name" },
-  "quote": { "value": "amount_untaxed", "link": "opportunity_id", "extra": "state" },
+  "stage": {
+    "won": "is_won",
+    "sequence": "sequence",
+    "name": "name"
+  },
+  "quote": {
+    "value": "amount_untaxed",
+    "link": "opportunity_id",
+    "extra": "state"
+  },
   "rules": {
-    "forecastTags": ["Commit", "Best Case", "Pipeline", "Initial"],
+    "forecastTags": [
+      "Commit",
+      "Best Case",
+      "Pipeline",
+      "Initial"
+    ],
     "categoryByStage": [
-      { "match": "negoci|negocia", "category": "commit" },
-      { "match": "propuesta|proposi", "category": "bestcase" },
-      { "match": "sponsor", "category": "bestcase" },
-      { "match": "calific|qualified", "category": "pipeline" },
-      { "match": "nuevo|new", "category": "initial" }
+      {
+        "match": "negoci|negocia",
+        "category": "commit"
+      },
+      {
+        "match": "propuesta|proposi",
+        "category": "bestcase"
+      },
+      {
+        "match": "sponsor",
+        "category": "bestcase"
+      },
+      {
+        "match": "calific|qualified",
+        "category": "pipeline"
+      },
+      {
+        "match": "nuevo|new",
+        "category": "initial"
+      }
     ],
     "horizonMonths": 6,
     "yearsByStage": [
-      { "match": "negoti|negocia", "years": 3 },
-      { "match": "proposi|propuesta", "years": 2 }
+      {
+        "match": "negoti|negocia",
+        "years": 3
+      },
+      {
+        "match": "proposi|propuesta",
+        "years": 2
+      }
     ],
     "defaultYears": 1
+  },
+  "partner": {
+    "_area": "fidelizacion",
+    "_source": "Odoo central (odoo.com) · partner_id de oportunidades ganadas del partner",
+    "customer": "partner_id",
+    "name": "name",
+    "isCompany": "is_company",
+    "mrr": "recurring_revenue_monthly",
+    "renewalDate": "next_invoice_date",
+    "users": "x_num_usuarios",
+    "lastContact": "date_last_stage_update",
+    "nps": "x_nps",
+    "segment": "category_id",
+    "_validate": [
+      "mrr",
+      "renewalDate",
+      "users",
+      "nps"
+    ]
+  },
+  "project": {
+    "_area": "ejecucion",
+    "_source": "Odoo central (VALIDAR: entrega suele vivir en Odoo del partner)",
+    "project": "project.project",
+    "partner": "partner_id",
+    "milestone": "project.milestone",
+    "milestoneDeadline": "deadline",
+    "milestoneRealDate": "x_fecha_real",
+    "taskStage": "stage_id",
+    "plannedHours": "allocated_hours",
+    "realHours": "unit_amount",
+    "_validate": [
+      "project",
+      "milestoneRealDate"
+    ]
   }
 }

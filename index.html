@@ -305,6 +305,10 @@
     <div class="grp">Análisis del CRM · lo importante</div>
     <button data-tab="crm"><span class="i"></span> CRM &amp; Embudo</button>
     <button data-tab="forecast"><span class="i"></span> Forecast</button>
+    <div class="grp">Postventa · por validar</div>
+    <button data-tab="clientes"><span class="i"></span> Fidelización · Clientes</button>
+    <button data-tab="proyectos"><span class="i"></span> Ejecución · Proyectos</button>
+    <div class="grp">Más</div>
     <button data-tab="vistas"><span class="i"></span> Ideas de visualización</button>
     <div class="grp">Salida</div>
     <button data-tab="json"><span class="i"></span> Mapa de campos · JSON</button>
@@ -701,6 +705,55 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FIDELIZACIÓN · CLIENTES ============ -->
+  <section class="tab" data-tabid="clientes">
+    <div class="head"><div class="eyebrow">Postventa · por validar con el equipo</div><h1>Fidelización · Clientes</h1>
+      <p>La cartera de clientes del partner: quién puede irse (churn), quién puede crecer (upsell) y qué acciones de valor
+      hay planificadas. Fuente: <b>Odoo central</b> — los clientes salen de las oportunidades ganadas asignadas al partner
+      (<code>partner_assigned_id</code>), y el cliente final es <code>partner_id</code>. Validad campo a campo si el dato
+      existe en Odoo central o hay que traerlo del Odoo del partner.</p></div>
+    <div class="pad">
+      <div class="zone"><span class="zone-lbl content">Contenido · de dónde sale cada dato</span>
+        <table class="metrics">
+          <tr><th>Dato en la app</th><th>Odoo · modelo.campo</th><th>Cómo se obtiene / a validar</th></tr>
+          <tr><td class="m-name">Cliente / cuenta</td><td><code>res.partner</code> · name, is_company</td><td>partner_id de las oportunidades ganadas del partner</td></tr>
+          <tr><td class="m-name">MRR del cliente</td><td><code>crm.lead.recurring_revenue_monthly</code></td><td>Suma del MRR de las ganadas del cliente · ¿suscripción real en central? <b>validar</b></td></tr>
+          <tr><td class="m-name">Fecha de renovación</td><td><code>sale.subscription · next_invoice_date / date_end</code></td><td>Puede NO estar en central → ¿Odoo del partner? <b>validar</b></td></tr>
+          <tr><td class="m-name">Usuarios / licencias</td><td>líneas de suscripción / <code>crm.lead</code> nº usuarios</td><td><b>validar</b> campo real</td></tr>
+          <tr><td class="m-name">Último contacto</td><td><code>mail.activity</code> / <code>mail.message</code></td><td>Fecha de la última actividad → riesgo de fuga si &gt;90d</td></tr>
+          <tr><td class="m-name">Satisfacción / NPS</td><td>campo propio o encuesta (<code>survey</code>)</td><td>No nativo → definir origen <b>validar</b></td></tr>
+          <tr><td class="m-name">Segmento</td><td><code>res.partner.category_id</code> (etiquetas)</td><td>Estratégico / Escalable / Runrate · rangos los pone el PM</td></tr>
+          <tr><td class="m-name">Riesgo de fuga</td><td>calculado</td><td>&gt;90d sin contacto o NPS bajo o cancelación próxima</td></tr>
+        </table>
+        <div class="guide" style="margin-top:12px"><b>Nota para el equipo:</b> lo marcado «validar» es donde no está claro si el dato vive en el Odoo central o en el del partner. Comentadlo aquí para cerrarlo antes de cablear.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EJECUCIÓN · PROYECTOS ============ -->
+  <section class="tab" data-tabid="proyectos">
+    <div class="head"><div class="eyebrow">Postventa · por validar con el equipo</div><h1>Ejecución · Proyectos</h1>
+      <p>Los proyectos de implantación de los clientes: hitos planificados vs reales, desviación de horas y de plazos.
+      Fuente: <b>Odoo central</b> (a validar: los proyectos de entrega suelen vivir en el Odoo del partner, no en central).
+      El objetivo es el seguimiento CSTI: que los hitos se cumplan a tiempo y mejorar la experiencia de entrega.</p></div>
+    <div class="pad">
+      <div class="zone"><span class="zone-lbl content">Contenido · de dónde sale cada dato</span>
+        <table class="metrics">
+          <tr><th>Dato en la app</th><th>Odoo · modelo.campo</th><th>Cómo se obtiene / a validar</th></tr>
+          <tr><td class="m-name">Proyecto del cliente</td><td><code>project.project</code> · partner_id</td><td>Proyectos del cliente final · ¿en central o Odoo del partner? <b>validar</b></td></tr>
+          <tr><td class="m-name">Hito · fecha planificada</td><td><code>project.milestone.deadline</code></td><td>Fecha objetivo de cada hito</td></tr>
+          <tr><td class="m-name">Hito · fecha real</td><td>campo real de alcanzado (a confirmar)</td><td><code>project.milestone</code> ¿guarda fecha real? → si no, campo propio <b>validar</b></td></tr>
+          <tr><td class="m-name">Desviación de plazo</td><td>calculado</td><td>fecha real − planificada por hito → retraso acumulado automático</td></tr>
+          <tr><td class="m-name">Horas previstas</td><td><code>project.task.allocated_hours</code></td><td>Suma por proyecto</td></tr>
+          <tr><td class="m-name">Horas reales</td><td><code>account.analytic.line.unit_amount</code></td><td>Partes de horas (timesheets)</td></tr>
+          <tr><td class="m-name">Desviación de horas</td><td>calculado</td><td>(reales − previstas) ÷ previstas · meta &lt;10%</td></tr>
+          <tr><td class="m-name">Estado / fase</td><td><code>project.task.stage_id</code></td><td>A tiempo / Desviado / En riesgo</td></tr>
+        </table>
+        <div class="guide" style="margin-top:12px"><b>Decisión pendiente CSTI:</b> definir qué hitos estándar lleva cada proyecto y dónde se apunta la fecha real de cada hito. Sin eso, Ejecución no se puede leer automáticamente.</div>
       </div>
     </div>
   </section>
